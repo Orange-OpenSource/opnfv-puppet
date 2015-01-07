@@ -13,7 +13,7 @@
 #  The profile to install rabbitmq
 #
 class opensteak::rabbitmq {
-  Exec { path => '/usr/bin:/usr/sbin:/bin:/sbin' }
+  include opensteak
 
   $rabbitmq_password = hiera('rabbitmq::password')
 
