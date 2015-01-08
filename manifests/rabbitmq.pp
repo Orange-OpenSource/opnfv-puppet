@@ -13,7 +13,6 @@
 #  The profile to install rabbitmq
 #
 class opensteak::rabbitmq {
-  include opensteak
 
   $rabbitmq_password = hiera('rabbitmq::password')
 
