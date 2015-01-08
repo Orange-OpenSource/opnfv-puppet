@@ -24,9 +24,7 @@ class opensteak::keystone {
     verbose           => hiera('verbose'),
     debug             => hiera('debug'),
     admin_token       => hiera('keystone::admin-token'),
-    sql_connection    => "mysql://keystone:${password}@mysql.${stack_domain}/keystone",
-    catalog_type      => 'sql',
-    mysql_module      => '2.3',
+    database_connection    => "mysql://keystone:${password}@mysql.${stack_domain}/keystone",
   }
 
   class { '::keystone::roles::admin':
