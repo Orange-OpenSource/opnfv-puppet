@@ -13,7 +13,6 @@
 # The profile to install the dns machine
 #
 class opensteak::dns {
-  include opensteak
   include bind
 
   $domain = hiera('domain')
