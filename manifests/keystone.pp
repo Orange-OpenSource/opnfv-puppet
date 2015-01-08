@@ -21,10 +21,10 @@ class opensteak::keystone {
   $stack_domain = hiera('stack::domain')
 
   class { '::keystone':
-    verbose           => hiera('verbose'),
-    debug             => hiera('debug'),
-    admin_token       => hiera('keystone::admin-token'),
-    database_connection    => "mysql://keystone:${password}@mysql.${stack_domain}/keystone",
+    verbose                 => hiera('verbose'),
+    debug                   => hiera('debug'),
+    admin_token             => hiera('keystone::admin-token'),
+    database_connection     => "mysql://keystone:${password}@mysql.${stack_domain}/keystone",
   }
 
   class { '::keystone::roles::admin':
@@ -34,9 +34,9 @@ class opensteak::keystone {
   }
 
   class { 'keystone::endpoint':
-    public_address   => "keystone.${stack_domain}",
-    admin_address    => "keystone.${stack_domain}",
-    internal_address => "keystone.${stack_domain}",
+    public_url   => "keystone.${stack_domain}",
+    admin_url    => "keystone.${stack_domain}",
+    internal_url => "keystone.${stack_domain}",
     region           => hiera('region'),
   }
 
