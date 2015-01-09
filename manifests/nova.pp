@@ -26,7 +26,6 @@ class opensteak::nova {
     glance_api_servers  => "http://glance.${stack_domain}:9292",
     rabbit_host         => "rabbitmq.${stack_domain}",
     rabbit_password     => hiera('rabbitmq::password'),
-    mysql_module        => '2.3',
   }
 
   class { '::nova::api':
