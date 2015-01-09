@@ -25,8 +25,8 @@ class opensteak::keystone {
     debug                   => hiera('debug'),
     admin_token             => hiera('keystone::admin-token'),
     database_connection     => "mysql://keystone:${password}@mysql.${stack_domain}/keystone",
-    paste_config            => "/etc/keystone/keystone-paste.ini",
-    token_driver            => "keystone.token.backends.sql.Token",
+#    paste_config            => "/etc/keystone/keystone-paste.ini",
+#    token_driver            => "keystone.token.backends.sql.Token",
   }
 
   class { '::keystone::roles::admin':
