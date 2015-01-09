@@ -25,6 +25,8 @@ class opensteak::keystone {
     debug                   => hiera('debug'),
     admin_token             => hiera('keystone::admin-token'),
     database_connection     => "mysql://keystone:${password}@mysql.${stack_domain}/keystone",
+    paste_config            => "/etc/keystone/keystone-paste.ini",
+    token_driver            => "keystone.token.backends.sql.Token",
   }
 
   class { '::keystone::roles::admin':
@@ -34,9 +36,9 @@ class opensteak::keystone {
   }
 
   class { 'keystone::endpoint':
-    public_url   => "keystone.${stack_domain}",
-    admin_url    => "keystone.${stack_domain}",
-    internal_url => "keystone.${stack_domain}",
+    public_url       => "keystone.${stack_domain}",
+    admin_url        => "keystone.${stack_domain}",
+    internal_url     => "keystone.${stack_domain}",
     region           => hiera('region'),
   }
 
