@@ -23,7 +23,7 @@ class opensteak::glance {
     verbose                 => hiera('verbose'),
     debug                   => hiera('debug'),
     auth_host               => "keystone.${stack_domain}",
-    auth_uri                => "http://keystone.${stack_domain}:5000/v2.0"
+    auth_uri                => "http://keystone.${stack_domain}:5000/v2.0",
     keystone_password       => hiera('glance::password'),
     database_connection     => "mysql://glance:${password}@mysql.${stack_domain}/glance",
   }
