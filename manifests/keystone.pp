@@ -36,9 +36,8 @@ class opensteak::keystone {
   }
 
   class { 'keystone::endpoint':
-    public_url       => "keystone.${stack_domain}",
-    admin_url        => "keystone.${stack_domain}",
-    internal_url     => "keystone.${stack_domain}",
+    public_url       => "http://keystone.${stack_domain}:5000",
+    admin_url        => "http://keystone.${stack_domain}:35357",
     region           => hiera('region'),
   }
 
