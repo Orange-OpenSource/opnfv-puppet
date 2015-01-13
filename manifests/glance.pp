@@ -13,11 +13,10 @@
 #  The profile to install glance
 #
 class opensteak::glance {
-  # Recupere le password pour les services
   $password = hiera('mysql::service-password')
-
-  # Recupere les domaines
   $stack_domain = hiera('stack::domain')
+  $infra_nas = hiera('infra::nas')
+  $glance_nas_store_dir = hiera('glance::nas-store-dir')
 
   class { '::glance::api':
     verbose                 => hiera('verbose'),
@@ -49,5 +48,19 @@ class opensteak::glance {
   class { '::glance::notify::rabbitmq': 
     rabbit_password => hiera('rabbitmq::password'),
     rabbit_host     => "rabbitmq.${stack_domain}",
+  }
+  
+  # NFS is used on glance machine to store images
+  package { 'nfs-common':
+    ensure => installed
+  }
+  ->
+  mount { 'mount_glance':
+    name    => hiera('glance::file-store-dir'),
+    ensure  => mounted,
+    device  => "${infra_nas}:${glance_nas_store_dir}",
+    fstype  => 'nfs',
+    options => 'defaults',
+    atboot  => true,
   }
 }
