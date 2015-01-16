@@ -23,15 +23,15 @@ class opensteak::neutron-compute {
   ##
   # Forwarding plane
   ##
-  ::sysctl::value { 'net.ipv4.ip_forward':
+  sysctl::value { 'net.ipv4.ip_forward':
     value     => '1',
   }
 
-  ::sysctl::value { 'net.ipv4.conf.all.rp_filter':
+  sysctl::value { 'net.ipv4.conf.all.rp_filter':
     value     => '0',
   }
 
-  ::sysctl::value { 'net.ipv4.conf.default.rp_filter':
+  sysctl::value { 'net.ipv4.conf.default.rp_filter':
     value     => '0',
   }
 
