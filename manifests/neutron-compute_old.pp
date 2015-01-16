@@ -42,7 +42,6 @@ class opensteak::neutron-compute {
   class { '::neutron':
     debug                 => hiera('debug'),
     verbose               => hiera('verbose'),
-	allow_overlapping_ips => true,
     rabbit_host           => "rabbitmq.${stack_domain}",
     rabbit_password       => hiera('rabbitmq::password'),
     core_plugin           => 'ml2',
@@ -50,31 +49,14 @@ class opensteak::neutron-compute {
     allow_overlapping_ips => true,
   }
 
-
-# =============================================================================================
-
-
-
   class { '::neutron::plugins::ml2':
     type_drivers          => ['vlan'],
     tenant_network_types  => ['vlan'],
     network_vlan_ranges   => ['physnet-vm:701:899'],
     enable_security_group => true,
-    # Pas certain que ce soit encore nécessaire
+    #require               => Package['neutron-plugin-openvswitch', 'neutron-plugin-linuxbridge', 'neutron-plugin-ml2'],
     require               => Package['neutron-plugin-openvswitch', 'neutron-plugin-ml2'],
   }
-  
-# ml2 plugin with vxlan as ml2 driver and ovs as mechanism driver
-class { 'neutron::plugins::ml2':
-type_drivers => ['vxlan'],
-tenant_network_types => ['vxlan'],
-vxlan_group => '239.1.1.1',
-mechanism_drivers => ['openvswitch'],
-vni_ranges => ['0:300']
-}
-  
-# =============================================================================================
-
 
   class { '::neutron::config':
     # Ajout config keystone

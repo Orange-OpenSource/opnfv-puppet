@@ -42,6 +42,7 @@ class opensteak::neutron-compute {
   class { '::neutron':
     debug                 => hiera('debug'),
     verbose               => hiera('verbose'),
+	allow_overlapping_ips => true,
     rabbit_host           => "rabbitmq.${stack_domain}",
     rabbit_password       => hiera('rabbitmq::password'),
     core_plugin           => 'ml2',
@@ -54,8 +55,9 @@ class opensteak::neutron-compute {
     tenant_network_types  => ['vlan'],
     network_vlan_ranges   => ['physnet-vm:701:899'],
     enable_security_group => true,
-    #require               => Package['neutron-plugin-openvswitch', 'neutron-plugin-linuxbridge', 'neutron-plugin-ml2'],
-    require               => Package['neutron-plugin-openvswitch', 'neutron-plugin-ml2'],
+    mechanism_drivers => ['openvswitch'],
+    ## Pas certain que ce soit encore nécessaire
+    # require               => Package['neutron-plugin-openvswitch', 'neutron-plugin-ml2'],
   }
 
   class { '::neutron::config':
@@ -78,18 +80,19 @@ class opensteak::neutron-compute {
       'ovs/bridge_mappings'     => { value  => 'physnet-vm:br-vm' },
     },
   }
-
-
+  
   class { '::neutron::agents::ovs': 
+  
     bridge_mappings   => ['physnet-vm:br-vm'],
-    bridge_uplinks    => ['br-vm:em5'],
+    #~ bridge_uplinks    => ['br-vm:em5'],
+    bridge_uplinks    => [hiera(bridge_uplinks)],
   }
 
-  package { [
-      'neutron-plugin-ml2',
-      'neutron-plugin-openvswitch',
-      #      'neutron-plugin-linuxbridge',
-    ]:
-    ensure  => present,
-  }
+  #~ package { [
+      #~ 'neutron-plugin-ml2',
+      #~ 'neutron-plugin-openvswitch',
+      #~ #      'neutron-plugin-linuxbridge',
+    #~ ]:
+    #~ ensure  => present,
+  #~ }
 }
