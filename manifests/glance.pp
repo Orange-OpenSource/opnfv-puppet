@@ -50,6 +50,12 @@ class opensteak::glance {
     rabbit_host     => "rabbitmq.${stack_domain}",
   }
   
+  class { '::glance::db::mysql':
+    password      => hiera('mysql::service-password'),
+    host          => hiera('stack::vm::glance'),
+    allowed_hosts => '%',
+  }
+  
   # NFS is used on glance machine to store images
   package { 'nfs-common':
     ensure => installed

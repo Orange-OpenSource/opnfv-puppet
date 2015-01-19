@@ -35,10 +35,16 @@ class opensteak::keystone {
     admin_tenant => hiera('admin::tenant'),
   }
 
-  class { 'keystone::endpoint':
+  class { '::keystone::endpoint':
     public_url       => "http://keystone.${stack_domain}:5000",
     admin_url        => "http://keystone.${stack_domain}:35357",
     region           => hiera('region'),
+  }
+  
+  class { '::keystone::db::mysql':
+    password      => hiera('mysql::service-password'),
+    host          => hiera('stack::vm::keystone'),
+    allowed_hosts => '%',
   }
 
   class { '::glance::keystone::auth':
