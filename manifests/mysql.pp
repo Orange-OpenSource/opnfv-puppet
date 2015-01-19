@@ -35,6 +35,30 @@ class opensteak::mysql {
   class { '::mysql::server::account_security':
   }
 
+  # Keystone
+  class { '::keystone::db::mysql':
+    password      => hiera('mysql::service-password'),
+    allowed_hosts => '%',
+  }
+
+  # Glance
+  class { '::glance::db::mysql':
+    password      => hiera('mysql::service-password'),
+    allowed_hosts => '%',
+  }
+
+  # Nova
+  class { '::nova::db::mysql':
+    password      => hiera('mysql::service-password'),
+    allowed_hosts => '%',
+  }
+
+  # Neutron
+  class { '::neutron::db::mysql':
+    password      => hiera('mysql::service-password'),
+    allowed_hosts => '%',
+  }
+
   # # Cinder
   # class { '::cinder::db::mysql':
   #   password      => hiera('mysql::service-password'),

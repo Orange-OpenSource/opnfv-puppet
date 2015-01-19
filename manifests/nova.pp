@@ -34,12 +34,6 @@ class opensteak::nova {
     enabled                               => true,
     neutron_metadata_proxy_shared_secret  => hiera('neutron::shared-secret'),
   }
-  
-  class { '::nova::db::mysql':
-    password      => hiera('mysql::service-password'),
-    host          => hiera('stack::vm::nova'),
-    allowed_hosts => '%',
-  }
 
   class { [
     '::nova::scheduler',

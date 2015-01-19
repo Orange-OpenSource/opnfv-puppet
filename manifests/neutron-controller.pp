@@ -49,12 +49,6 @@ class opensteak::neutron-controller {
     enable_security_group => true,
     require               => Package['neutron-plugin-openvswitch', 'neutron-plugin-ml2'],
   }
-  
-  class { '::neutron::db::mysql':
-    password      => hiera('mysql::service-password'),
-    host          => hiera('stack::vm::neutron'),
-    allowed_hosts => '%',
-  }
 
   # Ajout d'une conf pas prise en charge par la classe neutron::plugins::ml2
   class { '::neutron::config':
