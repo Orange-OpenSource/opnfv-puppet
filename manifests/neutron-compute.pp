@@ -88,7 +88,6 @@ class opensteak::neutron-compute {
   }
 
   package { [
-      'neutron-plugin-ml2',
       'neutron-plugin-openvswitch-agent',
       #      'neutron-plugin-linuxbridge',
     ]:
