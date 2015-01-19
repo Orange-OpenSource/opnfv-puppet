@@ -13,14 +13,17 @@
 #  The profile to install keystone
 #
 class opensteak::keystone {
-  # Recupere le password pour les services
   $password = hiera('mysql::service-password')
-
-  # Récupere les domaines
   $domain = hiera('domain')
   $stack_domain = hiera('stack::domain')
+  
+  # Probleme: c'est dans la machine mysql qu'on créer la BDD
+  # le script keystone-manage y est appelé mais n'existe pas
+  # On l'appelle donc ici
+  # A mon avis, y'a un bug à ouvrir...
+  exec { '/bin/sh -c "keystone-manage db_sync" keystone': }
 
-  class { '::keystone':
+  class { 'keystone':
     verbose                 => hiera('verbose'),
     debug                   => hiera('debug'),
     admin_token             => hiera('keystone::admin-token'),
@@ -29,7 +32,7 @@ class opensteak::keystone {
 #    token_driver            => "keystone.token.backends.sql.Token",
   }
 
-  class { '::keystone::roles::admin':
+  class { 'keystone::roles::admin':
     email        => hiera('admin::mail'),
     password     => hiera('admin::password'),
     admin_tenant => hiera('admin::tenant'),
@@ -40,8 +43,19 @@ class opensteak::keystone {
     admin_url        => "http://keystone.${stack_domain}:35357",
     region           => hiera('region'),
   }
+  
+#  keystone_tenant { 'admin':
+#    ensure  => present,
+#    enabled => True,
+#  }
+#  
+#  keystone_user { 'admin':
+#    ensure   => present,
+#    password => hiera('admin::password'),
+#    enabled  => True,
+#  }
 
-  class { '::glance::keystone::auth':
+  class { 'glance::keystone::auth':
     password         => hiera('glance::password'),
     public_address   => "glance.${stack_domain}",
     admin_address    => "glance.${stack_domain}",
@@ -49,7 +63,7 @@ class opensteak::keystone {
     region           => hiera('region'),
   }
 
-  class { '::nova::keystone::auth':
+  class { 'nova::keystone::auth':
     password         => hiera('nova::password'),
     public_address   => "nova.${stack_domain}",
     admin_address    => "nova.${stack_domain}",
@@ -57,7 +71,7 @@ class opensteak::keystone {
     region           => hiera('region'),
   }
 
-  class { '::neutron::keystone::auth':
+  class { 'neutron::keystone::auth':
     password         => hiera('neutron::password'),
     public_address   => "neutron.${stack_domain}",
     admin_address    => "neutron.${stack_domain}",
@@ -65,13 +79,13 @@ class opensteak::keystone {
     region           => hiera('region'),
   }
 
-  class { '::cinder::keystone::auth':
-    password         => hiera('cinder::password'),
-    public_address   => "cinder.${stack_domain}",
-    admin_address    => "cinder.${stack_domain}",
-    internal_address => "cinder.${stack_domain}",
-    region           => hiera('region'),
-  }
+#  class { 'cinder::keystone::auth':
+#    password         => hiera('cinder::password'),
+#    public_address   => "cinder.${stack_domain}",
+#    admin_address    => "cinder.${stack_domain}",
+#    internal_address => "cinder.${stack_domain}",
+#    region           => hiera('region'),
+#  }
 
  
 }
