@@ -35,6 +35,13 @@ class opensteak::neutron-compute {
   # Bug temporaire, manque un fichier dans le package
   # neutron-plugin-openvswitch
   ##
+  file { '/etc/neutron/plugins/openvswitch/':
+    ensure => "directory",
+    owner  => 'root',
+    group  => 'neutron',
+    mode   => '0755',
+  }
+  ->
   file { '/etc/neutron/plugins/openvswitch/ovs_neutron_plugin.ini':
     ensure => 'present',
     owner  => 'root',
@@ -55,13 +62,13 @@ class opensteak::neutron-compute {
     allow_overlapping_ips => true,
   }
 
-  class { '::neutron::plugins::ml2':
-    type_drivers          => ['vlan'],
-    tenant_network_types  => ['vlan'],
-    network_vlan_ranges   => ['physnet-vm:701:899'],
-    enable_security_group => true,
-    mechanism_drivers => ['openvswitch'],
-  }
+#  class { '::neutron::plugins::ml2':
+#    type_drivers          => ['vlan'],
+#    tenant_network_types  => ['vlan'],
+#    network_vlan_ranges   => ['physnet-vm:701:899'],
+#    enable_security_group => true,
+#    mechanism_drivers => ['openvswitch'],
+#  }
 
   class { '::neutron::config':
     # Ajout config keystone
@@ -73,13 +80,13 @@ class opensteak::neutron-compute {
       'keystone_authtoken/admin_user'         => { value => 'neutron' },
       'keystone_authtoken/admin_password'     => { value => hiera('neutron::password') },
     },
-    # Ajout config ovs
-    plugin_ml2_config =>
-    {
-      'ovs/enable_tunneling'    => { value  => 'False' },
-      'ovs/integration_bridge'  => { value  => 'br-int' },
-      'ovs/bridge_mappings'     => { value  => 'physnet-vm:br-vm' },
-    },
+#    # Ajout config ovs
+#    plugin_ml2_config =>
+#    {
+#      'ovs/enable_tunneling'    => { value  => 'False' },
+#      'ovs/integration_bridge'  => { value  => 'br-int' },
+#      'ovs/bridge_mappings'     => { value  => 'physnet-vm:br-vm' },
+#    },
   }
   
   class { '::neutron::agents::ovs': 
