@@ -56,7 +56,7 @@ class opensteak::neutron-compute {
     enable_security_group => true,
     mechanism_drivers => ['openvswitch'],
     ## Pas certain que ce soit encore nécessaire
-    # require               => Package['neutron-plugin-openvswitch', 'neutron-plugin-ml2'],
+    require               => Package['neutron-plugin-openvswitch', 'neutron-plugin-ml2'],
   }
 
   class { '::neutron::config':
@@ -87,11 +87,11 @@ class opensteak::neutron-compute {
     #~ bridge_uplinks    => ['br-vm:em5'],
   }
 
-  #~ package { [
-      #~ 'neutron-plugin-ml2',
-      #~ 'neutron-plugin-openvswitch',
-      #~ #      'neutron-plugin-linuxbridge',
-    #~ ]:
-    #~ ensure  => present,
-  #~ }
+  package { [
+      'neutron-plugin-ml2',
+      'neutron-plugin-openvswitch-agent',
+      #      'neutron-plugin-linuxbridge',
+    ]:
+    ensure  => present,
+  }
 }
