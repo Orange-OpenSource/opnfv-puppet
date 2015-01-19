@@ -13,10 +13,7 @@
 #  The profile to install neutron
 #
 class opensteak::neutron-controller {
-  # Recupere le password pour les services
   $password = hiera('mysql::service-password')
-
-  # Récupere les domaines
   $stack_domain = hiera('stack::domain')
 
   ##
@@ -40,7 +37,6 @@ class opensteak::neutron-controller {
     database_connection => "mysql://neutron:${password}@mysql.${stack_domain}/neutron",
     enabled             => true,
     #sync_db             => true,
-    mysql_module        => '2.3',
   }
 
   # neutron plugin ml2
@@ -59,8 +55,6 @@ class opensteak::neutron-controller {
     plugin_ml2_config =>
     {
       'securitygroup/firewall_driver'       => { value => 'neutron.agent.linux.iptables_firewall.OVSHybridIptablesFirewallDriver'},
-# Will be deprecated soon
-#      'securitygroup/enable_security_group' => { value => 'True'},
     },
     require               => Package['neutron-plugin-openvswitch', 'neutron-plugin-ml2'],
   }
