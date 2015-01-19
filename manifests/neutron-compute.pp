@@ -55,8 +55,6 @@ class opensteak::neutron-compute {
     network_vlan_ranges   => ['physnet-vm:701:899'],
     enable_security_group => true,
     mechanism_drivers => ['openvswitch'],
-    ## Pas certain que ce soit encore nécessaire
-    require               => Package['neutron-plugin-openvswitch', 'neutron-plugin-ml2'],
   }
 
   class { '::neutron::config':
@@ -88,8 +86,7 @@ class opensteak::neutron-compute {
   }
 
   package { [
-      'neutron-plugin-openvswitch-agent',
-      #      'neutron-plugin-linuxbridge',
+      'neutron-plugin-openvswitch',
     ]:
     ensure  => present,
   }
