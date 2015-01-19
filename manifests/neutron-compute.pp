@@ -16,7 +16,6 @@ class opensteak::neutron-compute {
   $password = hiera('mysql::service-password')
   $stack_domain = hiera('stack::domain')
 
-
   ##
   # Forwarding plane
   ##
@@ -31,7 +30,17 @@ class opensteak::neutron-compute {
   sysctl::value { 'net.ipv4.conf.default.rp_filter':
     value     => '0',
   }
-
+  
+  ##
+  # Bug temporaire, manque un fichier dans le package
+  # neutron-plugin-openvswitch
+  ##
+  file { '/etc/neutron/plugins/openvswitch/ovs_neutron_plugin.ini':
+    ensure => 'present',
+    owner  => 'root',
+    group  => 'neutron',
+    mode   => '0755',
+  }
 
   ##
   # Neutron
@@ -46,44 +55,36 @@ class opensteak::neutron-compute {
     allow_overlapping_ips => true,
   }
 
-#  class { '::neutron::plugins::ml2':
-#    type_drivers          => ['vlan'],
-#    tenant_network_types  => ['vlan'],
-#    network_vlan_ranges   => ['physnet-vm:701:899'],
-#    enable_security_group => true,
-#    mechanism_drivers => ['openvswitch'],
-#  }
+  class { '::neutron::plugins::ml2':
+    type_drivers          => ['vlan'],
+    tenant_network_types  => ['vlan'],
+    network_vlan_ranges   => ['physnet-vm:701:899'],
+    enable_security_group => true,
+    mechanism_drivers => ['openvswitch'],
+  }
 
   class { '::neutron::config':
-    # Ajout config keystone. TODO : revoir cette partie la avec neutron::keystone::auth
+    # Ajout config keystone
     server_config =>
     {
-      'keystone_authtoken/auth_uri'           => { value => "http://keystone.${stack_domain}:5000" }, 
-      'keystone_authtoken/auth_host'          => { value => "keystone.${stack_domain}" }, 
-      'keystone_authtoken/auth_protocol'      => { value => 'http' },
-      'keystone_authtoken/auth_port'          => { value => '35357' },
+      'keystone_authtoken/auth_uri'           => { value => "http://keystone.${stack_domain}:5000/v2.0" }, 
+      'keystone_authtoken/identity_uri'       => { value => "http://keystone.${stack_domain}:35357" }, 
       'keystone_authtoken/admin_tenant_name'  => { value => 'services' },
       'keystone_authtoken/admin_user'         => { value => 'neutron' },
       'keystone_authtoken/admin_password'     => { value => hiera('neutron::password') },
     },
-#    # Ajout config ovs
-#    plugin_ml2_config =>
-#    {
-#      'ovs/enable_tunneling'    => { value  => 'False' },
-#      'ovs/integration_bridge'  => { value  => 'br-int' },
-#      'ovs/bridge_mappings'     => { value  => 'physnet-vm:br-vm' },
-#    },
+    # Ajout config ovs
+    plugin_ml2_config =>
+    {
+      'ovs/enable_tunneling'    => { value  => 'False' },
+      'ovs/integration_bridge'  => { value  => 'br-int' },
+      'ovs/bridge_mappings'     => { value  => 'physnet-vm:br-vm' },
+    },
   }
   
   class { '::neutron::agents::ovs': 
     enable_tunneling  => false,
     bridge_mappings   => ['physnet-vm:br-vm'],
     bridge_uplinks    => [hiera(bridge_uplinks)],
-  }
-
-  package { [
-      'neutron-plugin-openvswitch',
-    ]:
-    ensure  => present,
   }
 }
