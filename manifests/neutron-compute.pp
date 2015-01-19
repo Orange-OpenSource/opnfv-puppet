@@ -42,7 +42,6 @@ class opensteak::neutron-compute {
   class { '::neutron':
     debug                 => hiera('debug'),
     verbose               => hiera('verbose'),
-	allow_overlapping_ips => true,
     rabbit_host           => "rabbitmq.${stack_domain}",
     rabbit_password       => hiera('rabbitmq::password'),
     core_plugin           => 'ml2',
