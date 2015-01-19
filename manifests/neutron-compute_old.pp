@@ -23,15 +23,15 @@ class opensteak::neutron-compute {
   ##
   # Forwarding plane
   ##
-  sysctl::value { 'net.ipv4.ip_forward':
+  ::sysctl::value { 'net.ipv4.ip_forward':
     value     => '1',
   }
 
-  sysctl::value { 'net.ipv4.conf.all.rp_filter':
+  ::sysctl::value { 'net.ipv4.conf.all.rp_filter':
     value     => '0',
   }
 
-  sysctl::value { 'net.ipv4.conf.default.rp_filter':
+  ::sysctl::value { 'net.ipv4.conf.default.rp_filter':
     value     => '0',
   }
 
@@ -54,7 +54,8 @@ class opensteak::neutron-compute {
     tenant_network_types  => ['vlan'],
     network_vlan_ranges   => ['physnet-vm:701:899'],
     enable_security_group => true,
-    mechanism_drivers => ['openvswitch'],
+    #require               => Package['neutron-plugin-openvswitch', 'neutron-plugin-linuxbridge', 'neutron-plugin-ml2'],
+    require               => Package['neutron-plugin-openvswitch', 'neutron-plugin-ml2'],
   }
 
   class { '::neutron::config':
@@ -77,16 +78,17 @@ class opensteak::neutron-compute {
       'ovs/bridge_mappings'     => { value  => 'physnet-vm:br-vm' },
     },
   }
-  
+
+
   class { '::neutron::agents::ovs': 
-  
     bridge_mappings   => ['physnet-vm:br-vm'],
-    bridge_uplinks    => [hiera(bridge_uplinks)],
-    #~ bridge_uplinks    => ['br-vm:em5'],
+    bridge_uplinks    => ['br-vm:em5'],
   }
 
   package { [
+      'neutron-plugin-ml2',
       'neutron-plugin-openvswitch',
+      #      'neutron-plugin-linuxbridge',
     ]:
     ensure  => present,
   }
