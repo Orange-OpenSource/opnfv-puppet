@@ -84,8 +84,8 @@ class opensteak::neutron-compute {
   class { '::neutron::agents::ovs': 
   
     bridge_mappings   => ['physnet-vm:br-vm'],
-    #~ bridge_uplinks    => ['br-vm:em5'],
     bridge_uplinks    => [hiera(bridge_uplinks)],
+    #~ bridge_uplinks    => ['br-vm:em5'],
   }
 
   #~ package { [
