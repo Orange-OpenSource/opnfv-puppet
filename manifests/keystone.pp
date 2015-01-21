@@ -26,7 +26,6 @@ class opensteak::keystone {
   # ou quand on modifie le parametre database_connection
   #class { '::keystone::db::sync': }
 
-  # Keystone need an uptodate python-openstackclient, install dependencies
   package { ['libffi-dev','python-dev']:
     ensure  => present,
   }
@@ -57,17 +56,6 @@ class opensteak::keystone {
     admin_url        => "http://keystone.${stack_domain}:35357",
     region           => hiera('region'),
   }
-  
-#  keystone_tenant { 'admin':
-#    ensure  => present,
-#    enabled => True,
-#  }
-#  
-#  keystone_user { 'admin':
-#    ensure   => present,
-#    password => hiera('admin::password'),
-#    enabled  => True,
-#  }
 
   class { '::glance::keystone::auth':
     password         => hiera('glance::password'),
