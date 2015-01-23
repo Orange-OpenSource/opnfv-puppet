@@ -13,10 +13,7 @@
 #  The profile to install (nova controller part)
 #
 class opensteak::nova {
-  # Recupere le password pour les services
   $password = hiera('mysql::service-password')
-
-  # Récupere les domaines
   $stack_domain = hiera('stack::domain')
 
   class { '::nova':

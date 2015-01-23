@@ -60,7 +60,6 @@ class opensteak::neutron-controller {
   }
 
   package { [
-      'neutron-plugin-ml2',
       'neutron-plugin-openvswitch',
     ]:
     ensure  => present,

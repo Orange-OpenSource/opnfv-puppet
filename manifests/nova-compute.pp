@@ -42,4 +42,8 @@ class opensteak::nova-compute {
     vncproxy_host                 => hiera("horizon::fqdn"),
     vnc_keymap                    => 'fr',
   }
+  
+  package { 'sysfsutils':
+    ensure => installed,
+  }
 }
