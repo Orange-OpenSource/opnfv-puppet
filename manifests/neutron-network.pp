@@ -70,7 +70,7 @@ class opensteak::neutron-network {
     network_vlan_ranges   => ['physnet-vm:701:899'],
     mechanism_drivers     => ['openvswitch'],
     enable_security_group => true,
-    require               => Package['neutron-plugin-openvswitch', 'neutron-plugin-ml2'],
+    require               => Package['neutron-plugin-openvswitch'],
   }
 
   # neutron plugin ml2 agent ovs
@@ -99,7 +99,6 @@ class opensteak::neutron-network {
 
 
   package { [
-      'neutron-plugin-ml2',
       'neutron-plugin-openvswitch',
     ]:
     ensure  => present,

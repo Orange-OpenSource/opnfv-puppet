@@ -36,7 +36,7 @@ class opensteak::neutron-controller {
     auth_password       => hiera('neutron::password'),
     database_connection => "mysql://neutron:${password}@mysql.${stack_domain}/neutron",
     enabled             => true,
-    #sync_db             => true,
+    sync_db             => true,
   }
 
   # neutron plugin ml2
@@ -47,7 +47,7 @@ class opensteak::neutron-controller {
     network_vlan_ranges   => ['physnet-vm:701:899'],
     mechanism_drivers     => ['openvswitch'],
     enable_security_group => true,
-    require               => Package['neutron-plugin-openvswitch', 'neutron-plugin-ml2'],
+    require               => Package['neutron-plugin-openvswitch'],
   }
 
   # Ajout d'une conf pas prise en charge par la classe neutron::plugins::ml2
