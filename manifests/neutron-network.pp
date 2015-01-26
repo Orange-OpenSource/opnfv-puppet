@@ -13,12 +13,8 @@
 #  The profile to install neutron
 #
 class opensteak::neutron-network {
-  # Recupere le password pour les services
   $password = hiera('mysql::service-password')
-
-  # Récupere les domaines
   $stack_domain = hiera('stack::domain')
-
 
   ##
   # Forwarding plane
@@ -35,7 +31,6 @@ class opensteak::neutron-network {
     value     => '0',
   }
 
-
   ##
   # Neutron
   ##
@@ -50,14 +45,13 @@ class opensteak::neutron-network {
     allow_overlapping_ips => true,
   }
 
-  # neutron api
+  # neutron server
   class { '::neutron::server':
     auth_host           => "keystone.${stack_domain}",
     auth_password       => hiera('neutron::password'),
     database_connection => "mysql://neutron:${password}@mysql.${stack_domain}/neutron",
     enabled             => true,
     #sync_db             => true,
-    mysql_module        => '2.3',
   }
 
   # neutron notifications depuis nova
