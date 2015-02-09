@@ -21,7 +21,6 @@ class opensteak::dns {
   $infra_vm = {
     'puppet' => hiera('infra::puppet'),
     'ceph-admin' => hiera('infra::ceph-admin'),
-    'nas' => hiera('infra::nas'),
     }
   $infra_vm_names = keys($infra_vm)
   $stack_vm = hiera('stack::vm')
@@ -37,7 +36,7 @@ class opensteak::dns {
   # Pour toutes les zones
   Bind::Zone {
     zone_contact => hiera('dns::contact'),
-    zone_ns      => "dns.$domain",
+    zone_ns      => ["dns.$domain"],
     zone_serial  => '2014100201',
     zone_ttl     => '3800',
     zone_origin  => $domain,
