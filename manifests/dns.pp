@@ -18,7 +18,11 @@ class opensteak::dns {
   $domain = hiera('domain')
   $stack_domain = hiera('stack::domain')
   $infra_reverse = hiera('infra::reverse_zone')
-  $infra_vm = hiera('infra::vm')
+  $infra_vm = {
+    'puppet' => hiera('infra::puppet'),
+    'ceph-admin' => hiera('infra::ceph-admin'),
+    'nas' => hiera('infra::nas'),
+    }
   $infra_vm_names = keys($infra_vm)
   $stack_vm = hiera('stack::vm')
   $stack_vm_names = keys($stack_vm)
