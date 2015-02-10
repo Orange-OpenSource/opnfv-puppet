@@ -13,16 +13,12 @@
 # The profile to install the dns machine
 #
 class opensteak::cinder {
-
   $domain = hiera('domain')
   $stack_domain = hiera('stack::domain')
-
-  # Recupere le password pour les services
   $password = hiera('mysql::service-password')
 
-##### A COMPLETER #####
+##### TO BE COMPLETED #####
 
-  # Recupere l'adresse ip pour tgt (iscsi target daemon)
   $tgt_listen_ip = hiera('cinder::tgt-listen-ip')
 
   class { '::cinder':
@@ -57,13 +53,13 @@ class opensteak::cinder {
     enabled          => true,
   }
 
-  # On a besoin de sheepdog
-  # voir ici : https://lists.launchpad.net/openstack/msg21163.html
+  # We need sheepdog
+  # see: https://lists.launchpad.net/openstack/msg21163.html
   package { 'sheepdog':
     ensure => 'present',
   }
 
-  # Mise a jour du fichier init de tgt
+  # Update tgt file
   file { '/etc/init/tgt.conf':
     content => template("opensteak-cinder/tgt.conf.erb"),
     notify  => Service['tgt'],
