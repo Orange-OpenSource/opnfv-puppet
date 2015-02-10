@@ -14,6 +14,7 @@
 #
 class opensteak::keystone {
   include pip
+  require opensteak::apt
   
   $password = hiera('mysql::service-password')
   $domain = hiera('domain')
