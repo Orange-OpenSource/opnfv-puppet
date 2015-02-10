@@ -81,14 +81,4 @@ class opensteak::keystone {
     internal_address => "neutron.${stack_domain}",
     region           => hiera('region'),
   }
-
-#  class { '::cinder::keystone::auth':
-#    password         => hiera('cinder::password'),
-#    public_address   => "cinder.${stack_domain}",
-#    admin_address    => "cinder.${stack_domain}",
-#    internal_address => "cinder.${stack_domain}",
-#    region           => hiera('region'),
-#  }
-
- 
 }
