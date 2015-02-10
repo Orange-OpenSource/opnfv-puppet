@@ -58,20 +58,4 @@ class opensteak::mysql {
     password      => hiera('mysql::service-password'),
     allowed_hosts => '%',
   }
-  
-  # # Cinder
-  # class { '::cinder::db::mysql':
-  #   password      => hiera('mysql::service-password'),
-  #   allowed_hosts => '%',
-  #   mysql_module  => '2.2',
-  # }
-
-
-  # # Heat
-  # class { 'heat::db::mysql':
-  #   password => hiera('mysql::service-password'),
-  #   allowed_hosts => '%',
-  #   mysql_module  => '2.3',
-  # }
-
 }
