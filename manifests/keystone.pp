@@ -19,13 +19,6 @@ class opensteak::keystone {
   $password = hiera('mysql::service-password')
   $domain = hiera('domain')
   $stack_domain = hiera('stack::domain')
-  
-  # Probleme: c'est dans la machine mysql qu'on créer la BDD
-  # le script keystone-manage y est appelé mais n'existe pas
-  # Decommenter au besoin pour l'appeler
-  # Il est normalement appeler à l'install du packet keystone
-  # ou quand on modifie le parametre database_connection
-  #class { '::keystone::db::sync': }
 
   package { ['libffi-dev','python-dev']:
     ensure  => present,
