@@ -85,6 +85,12 @@ class opensteak::dns {
     }
   }
 
+  # CNAME puppet.stack vers puppet
+  bind::a { "dns.${domain}".:
+      zone      => $domain,
+      hash_data => {"dns" => { owner => hiera('infra::dns'), }, },
+  }
+  
   #
   # Create record type A in bind
   #
