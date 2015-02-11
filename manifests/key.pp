@@ -18,7 +18,7 @@ class opensteak::key {
   $password = hiera('admin::password')
   $domain = hiera('domain')
 
-  file { '/root/os_creds_admin':
+  file { '/root/os-creds-admin':
     mode    => '0770',
     ensure  => present,
     content => "#!/bin/bash
