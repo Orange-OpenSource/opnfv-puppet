@@ -72,7 +72,7 @@ class opensteak::dns {
 
   # Create all records for nodes
   create_a_record { $infra_nodes_names:
-    domain     => $stack_domain,
+    domain     => $domain,
     vm_ip_hash => $infra_nodes,
   }
 
@@ -86,7 +86,7 @@ class opensteak::dns {
   }
 
   # CNAME puppet.stack vers puppet
-  bind::a { "dns.${domain}".:
+  bind::a { "dns.${domain}.":
       zone      => $domain,
       hash_data => {"dns" => { owner => hiera('infra::dns'), }, },
   }
