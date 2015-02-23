@@ -72,7 +72,7 @@ class opensteak::dns {
 
   # Create all records for nodes
   create_a_record { $infra_nodes_names:
-    domain     => $domain,
+    domain     => $stack_domain,
     vm_ip_hash => $infra_nodes,
   }
 
