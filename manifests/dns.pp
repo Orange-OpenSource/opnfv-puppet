@@ -66,13 +66,13 @@ class opensteak::dns {
 
   # Create all records for infra
   create_a_record { $infra_vm_names:
-    domain     => $domain,
+    domain     => $stack_domain,
     vm_ip_hash => $infra_vm,
   }
 
   # Create all records for nodes
   create_a_record { $infra_nodes_names:
-    domain     => $domain,
+    domain     => $stack_domain,
     vm_ip_hash => $infra_nodes,
   }
 
