@@ -15,7 +15,6 @@
 class opensteak::dns {
   include bind
 
-  $domain = hiera('domain')
   $stack_domain = hiera('stack::domain')
   $infra_reverse = hiera('infra::reverse_zone')
   $infra_vm = {
@@ -33,25 +32,19 @@ class opensteak::dns {
     content => template('opensteak/named.conf.options.erb'),
   }
 
-  # Pour toutes les zones
-  Bind::Zone {
+  # Stack subdomain zone file
+  bind::zone { $stack_domain:
     zone_contact => hiera('dns::contact'),
-    zone_ns      => ["dns.$domain"],
+    zone_ns      => ["dns.$stack_domain"],
     zone_serial  => '2014100201',
     zone_ttl     => '3800',
-    zone_origin  => $domain,
+    zone_origin  => $stack_domain,
   }
 
-  # opensteak.fr
-  bind::zone { $domain: }
   # reverse
   bind::zone { $infra_reverse: }
-  # stack.opensteak.fr
-  bind::zone { $stack_domain: 
-    zone_origin => $stack_domain,
-  }
 
-  # Pour tous les records type A
+  # Apply to all A records
   Bind::A {
     ensure    => 'present',
     zone_arpa => $infra_reverse,
@@ -77,17 +70,8 @@ class opensteak::dns {
   }
 
   # CNAME puppet.stack vers puppet
-  bind::record {"CNAME puppet.${domain}.":
-    zone        => $stack_domain,
-    record_type => 'CNAME',
-    hash_data   => {
-      'puppet'      => { owner => "puppet.${domain}.", },
-    }
-  }
-
-  # CNAME puppet.stack vers puppet
-  bind::a { "dns.${domain}.":
-      zone      => $domain,
+  bind::a { "dns.${stack_domain}.":
+      zone      => $stack_domain,
       hash_data => {"dns" => { owner => hiera('infra::dns'), }, },
   }
   

@@ -13,6 +13,8 @@
 #  The profile to install (nova controller part)
 #
 class opensteak::nova-compute {
+  require opensteak::apt
+
   $password = hiera('mysql::service-password')
   $stack_domain = hiera('stack::domain')
 

@@ -13,6 +13,8 @@
 # The profile to install the dns machine
 #
 class opensteak::cinder {
+  require opensteak::apt
+
   $domain = hiera('domain')
   $stack_domain = hiera('stack::domain')
   $password = hiera('mysql::service-password')

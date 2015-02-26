@@ -13,6 +13,8 @@
 #  The profile to install neutron
 #
 class opensteak::neutron-compute {
+  require opensteak::apt
+
   $password = hiera('mysql::service-password')
   $stack_domain = hiera('stack::domain')
 

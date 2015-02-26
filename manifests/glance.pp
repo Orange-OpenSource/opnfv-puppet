@@ -13,6 +13,8 @@
 #  The profile to install glance
 #
 class opensteak::glance {
+  require opensteak::apt
+
   $password = hiera('mysql::service-password')
   $stack_domain = hiera('stack::domain')
   $infra_nas = hiera('infra::nas')
