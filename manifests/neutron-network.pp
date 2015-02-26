@@ -13,6 +13,8 @@
 #  The profile to install neutron
 #
 class opensteak::neutron-network {
+  require opensteak::apt
+
   $password = hiera('mysql::service-password')
   $stack_domain = hiera('stack::domain')
 
@@ -54,7 +56,7 @@ class opensteak::neutron-network {
     #sync_db             => true,
   }
 
-  # neutron notifications depuis nova
+  # neutron notifications with nova
   class { '::neutron::server::notifications':
     nova_url            => "http://nova.${stack_domain}:8774/v2",
     nova_admin_auth_url => "http://keystone.${stack_domain}:35357/v2.0",
@@ -96,7 +98,6 @@ class opensteak::neutron-network {
     auth_region   => hiera('region'),
     metadata_ip   => "nova.${stack_domain}",
   }
-
 
   package { [
       'neutron-plugin-openvswitch',
