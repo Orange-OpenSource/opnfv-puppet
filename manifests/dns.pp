@@ -42,7 +42,13 @@ class opensteak::dns {
   }
 
   # reverse
-  bind::zone { $infra_reverse: }
+  bind::zone { $infra_reverse:
+    zone_contact => hiera('dns::contact'),
+    zone_ns      => ["dns.$stack_domain"],
+    zone_serial  => '2014100201',
+    zone_ttl     => '3800',
+    zone_origin  => $stack_domain,
+  }
 
   # Apply to all A records
   Bind::A {
