@@ -21,10 +21,6 @@ class opensteak::neutron-compute {
   ##
   # Forwarding plane
   ##
-  sysctl::value { 'net.ipv4.ip_forward':
-    value     => '1',
-  }
-
   sysctl::value { 'net.ipv4.conf.all.rp_filter':
     value     => '0',
   }
@@ -34,22 +30,21 @@ class opensteak::neutron-compute {
   }
   
   ##
-  # Bug temporaire, manque un fichier dans le package
-  # neutron-plugin-openvswitch
+  # Temporary bug, neutron-plugin-openvswitch is missing a file
   ##
-  file { '/etc/neutron/plugins/openvswitch/':
-    ensure => "directory",
-    owner  => 'root',
-    group  => 'neutron',
-    mode   => '0755',
-  }
-  ->
-  file { '/etc/neutron/plugins/openvswitch/ovs_neutron_plugin.ini':
-    ensure => 'present',
-    owner  => 'root',
-    group  => 'neutron',
-    mode   => '0755',
-  }
+#  file { '/etc/neutron/plugins/openvswitch/':
+#    ensure => "directory",
+#    owner  => 'root',
+#    group  => 'neutron',
+#    mode   => '0755',
+#  }
+#  ->
+#  file { '/etc/neutron/plugins/openvswitch/ovs_neutron_plugin.ini':
+#    ensure => 'present',
+#    owner  => 'root',
+#    group  => 'neutron',
+#    mode   => '0755',
+#  }
 
   ##
   # Neutron
@@ -72,28 +67,27 @@ class opensteak::neutron-compute {
 #    mechanism_drivers => ['openvswitch'],
 #  }
 
-  class { '::neutron::config':
-    # Ajout config keystone
-    server_config =>
-    {
-      'keystone_authtoken/auth_uri'           => { value => "http://keystone.${stack_domain}:5000/v2.0" }, 
-      'keystone_authtoken/identity_uri'       => { value => "http://keystone.${stack_domain}:35357" }, 
-      'keystone_authtoken/admin_tenant_name'  => { value => 'services' },
-      'keystone_authtoken/admin_user'         => { value => 'neutron' },
-      'keystone_authtoken/admin_password'     => { value => hiera('neutron::password') },
-    },
-#    # Ajout config ovs
+#  class { '::neutron::config':
+#    # Keystone authtoken config
+#    server_config =>
+#    {
+#      'keystone_authtoken/auth_uri'           => { value => "http://keystone.${stack_domain}:5000/v2.0" }, 
+#      'keystone_authtoken/identity_uri'       => { value => "http://keystone.${stack_domain}:35357" }, 
+#      'keystone_authtoken/admin_tenant_name'  => { value => 'services' },
+#      'keystone_authtoken/admin_user'         => { value => 'neutron' },
+#      'keystone_authtoken/admin_password'     => { value => hiera('neutron::password') },
+#    },
+#    # OVS config
 #    plugin_ml2_config =>
 #    {
 #      'ovs/enable_tunneling'    => { value  => 'False' },
 #      'ovs/integration_bridge'  => { value  => 'br-int' },
 #      'ovs/bridge_mappings'     => { value  => 'physnet-vm:br-vm' },
 #    },
-  }
+#  }
   
-  class { '::neutron::agents::ovs': 
-    enable_tunneling  => false,
-    bridge_mappings   => ['physnet-vm:br-vm'],
-    bridge_uplinks    => [hiera(bridge_uplinks)],
+  class { '::neutron::agents::ovs':
+#    bridge_mappings   => ['physnet-vm:br-vm'],
+#    bridge_uplinks    => [hiera(bridge_uplinks)],
   }
 }

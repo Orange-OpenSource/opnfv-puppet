@@ -18,9 +18,6 @@ class opensteak::neutron-controller {
   $password = hiera('mysql::service-password')
   $stack_domain = hiera('stack::domain')
 
-  ##
-  # Neutron
-  ##
   # neutron.conf
   class { '::neutron':
     debug                 => hiera('debug'),
@@ -32,7 +29,7 @@ class opensteak::neutron-controller {
     allow_overlapping_ips => true,
   }
 
-  # neutron api
+  # neutron api server
   class { '::neutron::server':
     auth_host           => "keystone.${stack_domain}",
     auth_password       => hiera('neutron::password'),
@@ -52,7 +49,7 @@ class opensteak::neutron-controller {
     require               => Package['neutron-plugin-openvswitch'],
   }
 
-  # Ajout d'une conf pas prise en charge par la classe neutron::plugins::ml2
+  # add a missing configuration not done by ::neutron::plugins::ml2
   class { '::neutron::config':
     plugin_ml2_config =>
     {
