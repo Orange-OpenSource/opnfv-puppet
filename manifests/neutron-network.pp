@@ -47,23 +47,6 @@ class opensteak::neutron-network {
     allow_overlapping_ips => true,
   }
 
-  # neutron server
-  class { '::neutron::server':
-    auth_host           => "keystone.${stack_domain}",
-    auth_password       => hiera('neutron::password'),
-    database_connection => "mysql://neutron:${password}@mysql.${stack_domain}/neutron",
-    enabled             => true,
-    #sync_db             => true,
-  }
-
-  # neutron notifications with nova
-  class { '::neutron::server::notifications':
-    nova_url            => "http://nova.${stack_domain}:8774/v2",
-    nova_admin_auth_url => "http://keystone.${stack_domain}:35357/v2.0",
-    nova_admin_password => hiera('nova::password'),
-    nova_region_name    => hiera('region'),
-  }
-
   # neutron plugin ml2
   class { '::neutron::plugins::ml2':
     type_drivers          => ['vlan','flat'],
