@@ -65,12 +65,15 @@ class opensteak::neutron-network {
   }
 
   class { '::neutron::agents::l3': 
-    debug          => hiera('debug'),
-    use_namespaces => true,
+    debug                       => hiera('debug'),
+    use_namespaces              => true,
+    router_delete_namespaces    => true,
   }
 
   class { '::neutron::agents::dhcp':
-    debug   => hiera('debug'),
+    debug                   => hiera('debug'),
+    use_namespaces          => true,
+    dhcp_delete_namespaces  => true,
   }
 
   class { '::neutron::agents::metadata':
