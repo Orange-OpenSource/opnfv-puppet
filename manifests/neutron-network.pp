@@ -90,4 +90,6 @@ class opensteak::neutron-network {
     ]:
     ensure  => present,
   }
+  
+  # TODO: find a way to add enable_ipset = True in ml2 config
 }
