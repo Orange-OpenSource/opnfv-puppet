@@ -17,6 +17,7 @@ class opensteak::cinder {
 
   $stack_domain = hiera('stack::domain')
   $password = hiera('mysql::service-password')
+  $rbd_secret_uuid = hiera('rbd_secret_uuid')
 
   class { '::cinder':
     database_connection => "mysql://cinder:${password}@mysql.${stack_domain}/cinder",
@@ -39,6 +40,14 @@ class opensteak::cinder {
 
   cinder::backend::rbd {'rbd-vms':
     rbd_pool => 'vms',
-    rbd_user => 'vms',
+    rbd_user => 'cinder',
   }
+
+  # Cinder use ceph client command from ceph-common package
+  package { 'ceph-common':
+    ensure => installed,
+  }
+
+  # TODO find a way to push /etc/ceph/ceph.conf
+  # TODO find a way to push /etc/ceph/ceph.client.cinder.keyring & check that this file is needed by cinder
 }
