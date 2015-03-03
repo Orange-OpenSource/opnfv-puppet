@@ -111,8 +111,6 @@ class opensteak::dns {
   ##
   # HA Management
   ##
-
-    $nodes_cname = ['mysql','keystone','glance','glance-storage','nova','neutron']
     if str2bool("$ha_enabled" ){
       # HA VIP record
       bind::a { "ha.${stack_domain}.":
@@ -120,25 +118,39 @@ class opensteak::dns {
           hash_data => {"dns" => { owner => hiera('stack::ha::vip'), }, },
       }
       # Link nodes to ha VIP
-      bind::record {"${nodes_cname}":
+      bind::record {"CNAME stack zone":
         zone => $stack_domain,
         record_type => 'CNAME',
         hash_data => {
-          "$name" => { owner => "ha.${stack_domain}.", },
+          "mysql" => { owner => "ha.${stack_domain}.", },
+          "keystone" => { owner => "ha.${stack_domain}.", },
+          "glance" => { owner => "ha.${stack_domain}.", },
+          "glance-storage" => { owner => "ha.${stack_domain}.", },
+          "nova" => { owner => "ha.${stack_domain}.", },
+          "neutron" => { owner => "ha.${stack_domain}.", },
+          "cinder" => { owner => "ha.${stack_domain}.", },
+          "horizon" => { owner => "ha.${stack_domain}.", },
         }
       }
     }
     else{
       # Link nodes to nodes1
-      bind::record {"${nodes_cname}":
+      bind::record {"CNAME stack zone":
         zone => $stack_domain,
         record_type => 'CNAME',
         hash_data => {
-          "$name" => { owner => "${name}1.${stack_domain}.", },
+          "mysql" => { owner => "mysql1.${stack_domain}.", },
+          "keystone" => { owner => "keystone1.${stack_domain}.", },
+          "glance" => { owner => "glance1.${stack_domain}.", },
+          "glance-storage" => { owner => "glance-storage1.${stack_domain}.", },
+          "nova" => { owner => "nova1.${stack_domain}.", },
+          "neutron" => { owner => "neutron1.${stack_domain}.", },
+          "cinder" => { owner => "cinder1.${stack_domain}.", },
+          "horizon" => { owner => "horizon1.${stack_domain}.", },
         }
       }
     }
- 
+
   ##
   # Create record type A in bind
   ##
