@@ -24,13 +24,13 @@ class opensteak::dns {
     $infra_reverse = hiera('infra::reverse_zone')
 
     # HA mode
-    $ha_enabled = hiera('stack::ha::enabled'),
+    $ha_enabled = hiera('stack::ha::enabled')
    
     # Infrastructure tools
     $infra_vm = {
       'puppet' => hiera('infra::puppet'),
       'ceph-admin' => hiera('infra::ceph-admin'),
-      }
+    }
     $infra_vm_names = keys($infra_vm)
 
     # OpenStack infrastructure
@@ -113,7 +113,7 @@ class opensteak::dns {
   ##
 
     $nodes_cname = ['mysql','keystone','glance','glance-storage','nova','neutron']
-    if str2bool("$ha_enabled" ){fablab-lannion.org
+    if str2bool("$ha_enabled" ){
       # HA VIP record
       bind::a { "ha.${stack_domain}.":
           zone      => $stack_domain,
@@ -124,7 +124,7 @@ class opensteak::dns {
         zone => $stack_domain,
         record_type => 'CNAME',
         hash_data => {
-          $name => { owner => "ha.${stack_domain}.", },
+          "$name" => { owner => "ha.${stack_domain}.", },
         }
       }
     }
@@ -134,7 +134,7 @@ class opensteak::dns {
         zone => $stack_domain,
         record_type => 'CNAME',
         hash_data => {
-          $name => { owner => "${name}1.${stack_domain}.", },
+          "$name" => { owner => "${name}1.${stack_domain}.", },
         }
       }
     }
