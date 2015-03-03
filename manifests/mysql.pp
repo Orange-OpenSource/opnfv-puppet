@@ -59,4 +59,10 @@ class opensteak::mysql {
     password      => hiera('mysql::service-password'),
     allowed_hosts => '%',
   }
+  
+  # Cinder
+  class { '::cinder::db::mysql':
+    password      => hiera('mysql::service-password'),
+    allowed_hosts => '%',
+  }
 }

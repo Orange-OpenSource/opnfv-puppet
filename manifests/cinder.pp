@@ -19,53 +19,27 @@ class opensteak::cinder {
   $stack_domain = hiera('stack::domain')
   $password = hiera('mysql::service-password')
 
-##### TO BE COMPLETED #####
-
-  $tgt_listen_ip = hiera('cinder::tgt-listen-ip')
-
   class { '::cinder':
-    sql_connection    => "mysql://cinder:${password}@$mysql.${stack_domain}/cinder",
-    rabbit_host       => "rabbitmq.${stack_domain}",
-    rabbit_password   => hiera('rabbitmq::password'),
-    debug             => hiera('debug'),
-    verbose           => hiera('verbose'),
-    mysql_module      => '2.2',
+    database_connection => "mysql://cinder:${password}@$mysql.${stack_domain}/cinder",
+    rabbit_host         => "rabbitmq.${stack_domain}",
+    rabbit_password     => hiera('rabbitmq::password'),
+    debug               => hiera('debug'),
+    verbose             => hiera('verbose'),
   }
 
   class { '::cinder::volume': }
 
-  class { '::cinder::volume::iscsi':
-    iscsi_ip_address  => $tgt_listen_ip,
-    volume_group      => hiera('cinder::vg-name'),
-  }
-
-  class { '::cinder::glance':
-    glance_api_servers  => "glance.${stack_domain}:9292",
-    glance_api_version  => '1',
-  }
-
-  class { '::cinder::api':
+  class { 'cinder::api':
     keystone_password   => hiera('cinder::password'),
     keystone_auth_host  => "keystone.${stack_domain}",
-    enabled             => true,
   }
 
   class { '::cinder::scheduler':
     scheduler_driver => 'cinder.scheduler.filter_scheduler.FilterScheduler',
-    enabled          => true,
   }
 
-  # We need sheepdog
-  # see: https://lists.launchpad.net/openstack/msg21163.html
-  package { 'sheepdog':
-    ensure => 'present',
+  cinder::backend::rbd {'rbd-vms':
+    rbd_pool => 'vms',
+    rbd_user => 'vms',
   }
-
-  # Update tgt file
-  file { '/etc/init/tgt.conf':
-    content => template("opensteak-cinder/tgt.conf.erb"),
-    notify  => Service['tgt'],
-  }  
-
-
 }
