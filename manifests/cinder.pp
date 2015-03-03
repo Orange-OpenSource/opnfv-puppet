@@ -39,8 +39,9 @@ class opensteak::cinder {
   }
 
   cinder::backend::rbd {'rbd-vms':
-    rbd_pool => 'vms',
-    rbd_user => 'cinder',
+    rbd_pool        => 'vms',
+    rbd_user        => 'cinder',
+    rbd_secret_uuid => "${rbd_secret_uuid}",
   }
 
   # Cinder use ceph client command from ceph-common package
