@@ -37,7 +37,7 @@ class opensteak::cinder-compute {
     unless  => "/usr/bin/virsh secret-get-value --secret ${rbd_secret_uuid}",
   }
   ->
-  exec { "/usr/bin/virsh secret-set-value --secret ${rbd_secret_uuid} --base64 $(cat /etc/ceph/ceph.client.cinder.key)"
+  exec { "/usr/bin/virsh secret-set-value --secret ${rbd_secret_uuid} --base64 $(cat /etc/ceph/ceph.client.cinder.key)":
     unless  => "/usr/bin/virsh secret-get-value --secret ${rbd_secret_uuid}",
   }
   
