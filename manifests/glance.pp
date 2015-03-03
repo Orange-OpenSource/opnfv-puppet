@@ -27,6 +27,7 @@ class opensteak::glance {
     auth_uri                => "http://keystone.${stack_domain}:5000/v2.0",
     keystone_password       => hiera('glance::password'),
     database_connection     => "mysql://glance:${password}@mysql.${stack_domain}/glance",
+    pipeline                => "keystone",
   }
   
   # Temp hack while identity_uri can't be set by glance puppet module
