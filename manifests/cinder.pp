@@ -15,12 +15,11 @@
 class opensteak::cinder {
   require opensteak::apt
 
-  $domain = hiera('domain')
   $stack_domain = hiera('stack::domain')
   $password = hiera('mysql::service-password')
 
   class { '::cinder':
-    database_connection => "mysql://cinder:${password}@$mysql.${stack_domain}/cinder",
+    database_connection => "mysql://cinder:${password}@mysql.${stack_domain}/cinder",
     rabbit_host         => "rabbitmq.${stack_domain}",
     rabbit_password     => hiera('rabbitmq::password'),
     debug               => hiera('debug'),
