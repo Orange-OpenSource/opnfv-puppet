@@ -27,6 +27,7 @@ class opensteak::glance {
     database_connection     => "mysql://glance:${password}@mysql.${stack_domain}/glance",
     pipeline                => "keystone",
     show_image_direct_url   => true,
+    known_stores            => ['glance.store.rbd.Store'],
   }
 
   # Temp hack while identity_uri can't be set by glance puppet module
