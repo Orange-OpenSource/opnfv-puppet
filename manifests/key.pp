@@ -16,7 +16,7 @@ class opensteak::key {
   $tenant = hiera('admin::tenant')
   $username = 'admin'
   $password = hiera('admin::password')
-  $domain = hiera('domain')
+  $stack_domain = hiera('stack::domain')
 
   file { '/root/os-creds-admin':
     mode    => '0770',
@@ -25,7 +25,7 @@ class opensteak::key {
 export OS_TENANT_NAME=$tenant
 export OS_USERNAME=$username
 export OS_PASSWORD=$password
-export OS_AUTH_URL=http://keystone.$domain:35357/v2.0"
+export OS_AUTH_URL=http://keystone.${stack_domain}:35357/v2.0"
   }
 
 
