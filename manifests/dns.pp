@@ -139,6 +139,7 @@ class opensteak::dns {
         zone => $stack_domain,
         record_type => 'CNAME',
         hash_data => {
+          "rabbit" => { owner => "rabbit1.${stack_domain}.", },
           "mysql" => { owner => "mysql1.${stack_domain}.", },
           "keystone" => { owner => "keystone1.${stack_domain}.", },
           "glance" => { owner => "glance1.${stack_domain}.", },
