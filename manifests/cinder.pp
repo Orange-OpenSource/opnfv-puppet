@@ -27,8 +27,6 @@ class opensteak::cinder {
     verbose             => hiera('verbose'),
   }
 
-  class { '::cinder::volume': }
-
   class { 'cinder::api':
     keystone_password   => hiera('cinder::password'),
     keystone_auth_host  => "keystone.${stack_domain}",
@@ -38,7 +36,9 @@ class opensteak::cinder {
     scheduler_driver => 'cinder.scheduler.filter_scheduler.FilterScheduler',
   }
 
-  cinder::backend::rbd {'rbd-vms':
+  class { '::cinder::volume': }
+
+  class { '::cinder::volume::rbd': 
     rbd_pool        => 'vms',
     rbd_user        => 'cinder',
     rbd_secret_uuid => "${rbd_secret_uuid}",
