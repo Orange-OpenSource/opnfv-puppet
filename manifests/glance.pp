@@ -17,8 +17,6 @@ class opensteak::glance {
 
   $password = hiera('mysql::service-password')
   $stack_domain = hiera('stack::domain')
-  $infra_nas = hiera('infra::nas')
-  $glance_nas_store_dir = hiera('glance::nas-store-dir')
 
   class { '::glance::api':
     verbose                 => hiera('verbose'),
@@ -28,13 +26,15 @@ class opensteak::glance {
     keystone_password       => hiera('glance::password'),
     database_connection     => "mysql://glance:${password}@mysql.${stack_domain}/glance",
     pipeline                => "keystone",
+    show_image_direct_url   => true,
   }
-  
+
   # Temp hack while identity_uri can't be set by glance puppet module
   glance_api_config { 'keystone_authtoken/identity_uri': value => "http://keystone.${stack_domain}:35357"; }
 
-  class { '::glance::backend::file': 
-    filesystem_store_datadir => hiera('glance::file-store-dir'),
+  class { '::glance::backend::rbd': 
+    rbd_store_user  => 'glance',
+    rbd_store_pool  => 'images',
   }
 
   class { '::glance::registry':
@@ -44,7 +44,7 @@ class opensteak::glance {
     database_connection     => "mysql://glance:${password}@mysql.${stack_domain}/glance",
     auth_host               => "keystone.${stack_domain}",
   }
-  
+
   # Temp hack while identity_uri can't be set by glance puppet module
   glance_registry_config { 'keystone_authtoken/identity_uri': value => "http://keystone.${stack_domain}:35357"; }
 
@@ -52,18 +52,6 @@ class opensteak::glance {
     rabbit_password => hiera('rabbitmq::password'),
     rabbit_host     => "rabbitmq.${stack_domain}",
   }
-  
-  # NFS is used on glance machine to store images
-  package { 'nfs-common':
-    ensure => installed
-  }
-  ->
-  mount { 'mount_glance':
-    name    => hiera('glance::file-store-dir'),
-    ensure  => mounted,
-    device  => "${infra_nas}:${glance_nas_store_dir}",
-    fstype  => 'nfs',
-    options => 'defaults',
-    atboot  => true,
-  }
+
+  # TODO find a way to push /etc/ceph/ceph.conf
 }
