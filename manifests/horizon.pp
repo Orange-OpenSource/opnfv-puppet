@@ -25,7 +25,7 @@ class opensteak::horizon {
     }
     
     class { '::horizon':
-        servername            => hiera('horizon::fqdn'),
+        servername            => hiera('horizon::publicfqdn'),
         keystone_url          => "http://keystone.${stack_domain}:5000/v2.0",
         cache_server_ip       => '127.0.0.1',
         cache_server_port     => '11211',
