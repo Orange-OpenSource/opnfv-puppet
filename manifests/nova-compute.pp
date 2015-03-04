@@ -34,6 +34,7 @@ class opensteak::nova-compute {
     neutron_url            => "http://neutron.${stack_domain}:9696",
   }
 
+  # TODO: add live_migration_flag
   class { '::nova::compute::libvirt': 
     vncserver_listen  => '0.0.0.0',
     migration_support => true,
@@ -50,6 +51,7 @@ class opensteak::nova-compute {
     libvirt_rbd_user        => 'cinder',
     libvirt_rbd_secret_uuid => "${rbd_secret_uuid}",
     libvirt_images_rbd_pool => 'vms',
+    rbd_keyring             => 'client.cinder',
   }
 
   package { 'sysfsutils':
