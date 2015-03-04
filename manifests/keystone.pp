@@ -35,14 +35,12 @@ class opensteak::keystone {
     database_connection     => "mysql://keystone:${password}@mysql.${stack_domain}/keystone",
     rabbit_host             => "rabbitmq.${stack_domain}",
     rabbit_password         => hiera('rabbitmq::password'),
-#    paste_config            => "/etc/keystone/keystone-paste.ini",
-#    token_driver            => "keystone.token.backends.sql.Token",
   }
 
   class { '::keystone::roles::admin':
-    email        => hiera('admin::mail'),
-    password     => hiera('admin::password'),
-    admin_tenant => hiera('admin::tenant'),
+    email                   => hiera('admin::mail'),
+    password                => hiera('admin::password'),
+    admin_tenant            => hiera('admin::tenant'),
   }
 
   class { '::keystone::endpoint':
@@ -50,6 +48,8 @@ class opensteak::keystone {
     admin_url        => "http://keystone.${stack_domain}:35357",
     region           => hiera('region'),
   }
+  
+  class { 'keystone::cron::token_flush': }
 
   class { '::glance::keystone::auth':
     password         => hiera('glance::password'),
@@ -76,7 +76,7 @@ class opensteak::keystone {
   }
 
   class { '::cinder::keystone::auth':
-    password         => hiera('neutron::password'),
+    password         => hiera('cinder::password'),
     public_address   => "cinder.${stack_domain}",
     admin_address    => "cinder.${stack_domain}",
     internal_address => "cinder.${stack_domain}",
