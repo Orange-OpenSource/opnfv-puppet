@@ -40,7 +40,7 @@ class opensteak::cinder {
   class { '::cinder::volume::rbd': 
     rbd_pool        => 'vms',
     rbd_user        => 'cinder',
-    rbd_secret_uuid => hiera('ceph-conf::client-cinder'),
+    rbd_secret_uuid => hiera('ceph-conf::libvirt-rbd-secret'),
   }
 
   # Cinder use ceph client command from ceph-common package

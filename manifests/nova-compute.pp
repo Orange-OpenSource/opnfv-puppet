@@ -48,7 +48,7 @@ class opensteak::nova-compute {
 
   class { '::nova::compute::rbd':
     libvirt_rbd_user        => 'cinder',
-    libvirt_rbd_secret_uuid => hiera('ceph-conf::client-cinder'),
+    libvirt_rbd_secret_uuid => hiera('ceph-conf::libvirt-rbd-secret'),
     libvirt_images_rbd_pool => 'vms',
     rbd_keyring             => 'client.cinder',
   }
