@@ -26,9 +26,9 @@ class opensteak::ceph {
   $infra_netmask = hiera('infra::network_mask')
   $disk = hiera('ceph-conf::disk')
 
-  class { 'ceph::repo': }
+  class { '::ceph::repo': }
 
-  class { 'ceph':
+  class { '::ceph':
     fsid                => hiera('ceph-conf::fsid'),
     mon_initial_members => join($infra_controllers_names,','),
     mon_host            => join($infra_controllers_ip,','),
