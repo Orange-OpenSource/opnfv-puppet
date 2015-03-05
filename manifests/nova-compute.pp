@@ -17,7 +17,6 @@ class opensteak::nova-compute {
 
   $password = hiera('mysql::service-password')
   $stack_domain = hiera('stack::domain')
-  $rbd_secret_uuid = hiera('rbd_secret_uuid')
 
   class { '::nova':
     verbose             => hiera('verbose'),
@@ -43,13 +42,13 @@ class opensteak::nova-compute {
   class { '::nova::compute':
     enabled                       => true,
     vncserver_proxyclient_address => "nova.${stack_domain}",
-    vncproxy_host                 => hiera("horizon::fqdn"),
+    vncproxy_host                 => hiera("horizon::publicfqdn"),
     vnc_keymap                    => 'fr',
   }
 
   class { '::nova::compute::rbd':
     libvirt_rbd_user        => 'cinder',
-    libvirt_rbd_secret_uuid => "${rbd_secret_uuid}",
+    libvirt_rbd_secret_uuid => hiera('ceph-conf::libvirt-rbd-secret'),
     libvirt_images_rbd_pool => 'vms',
     rbd_keyring             => 'client.cinder',
   }

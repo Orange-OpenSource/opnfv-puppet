@@ -17,7 +17,6 @@ class opensteak::cinder {
 
   $stack_domain = hiera('stack::domain')
   $password = hiera('mysql::service-password')
-  $rbd_secret_uuid = hiera('rbd_secret_uuid')
 
   class { '::cinder':
     database_connection => "mysql://cinder:${password}@mysql.${stack_domain}/cinder",
@@ -41,7 +40,7 @@ class opensteak::cinder {
   class { '::cinder::volume::rbd': 
     rbd_pool        => 'vms',
     rbd_user        => 'cinder',
-    rbd_secret_uuid => "${rbd_secret_uuid}",
+    rbd_secret_uuid => hiera('ceph-conf::libvirt-rbd-secret'),
   }
 
   # Cinder use ceph client command from ceph-common package
