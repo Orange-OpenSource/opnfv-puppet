@@ -14,7 +14,7 @@
 #
 class opensteak::opendaylight {
     
-    class { 'opendaylight':
+    class { '::opendaylight':
         install_method => 'tarball',
     }
 
