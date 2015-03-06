@@ -12,11 +12,8 @@
 #
 # The profile to install ceph
 #
-class opensteak::ceph {
+class opensteak::ceph-base {
 
-  $infra_nodes = hiera('infra::nodes')
-  $infra_nodes_names = keys($infra_nodes)
-  $infra_nodes_ip = values($infra_nodes)
   $infra_controllers = hiera('infra::controllers')
   $infra_controllers_names = keys($infra_controllers)
   $infra_controllers_ip = values($infra_controllers)
@@ -24,7 +21,6 @@ class opensteak::ceph {
   $storage_netmask = hiera('storage::network_mask')
   $infra_network = hiera('infra::network')
   $infra_netmask = hiera('infra::network_mask')
-  $disk = hiera('ceph-conf::disk')
 
   class { '::ceph::repo': }
 
@@ -35,35 +31,6 @@ class opensteak::ceph {
     cluster_network     => "${storage_network}/${storage_netmask}",
     public_network      => "${infra_network}/${infra_netmask}",
   }
-
-  ceph::mon { $::hostname:
-    key => hiera('ceph-conf::mon-key'),
-  }
-
-  Ceph::Key {
-    inject         => true,
-    inject_as_id   => 'mon.',
-    inject_keyring => "/var/lib/ceph/mon/ceph-${::hostname}/keyring",
-  }
-
-  ceph::key { 'client.admin':
-    secret  => hiera('ceph-conf::client-admin-key'),
-    cap_mon => 'allow *',
-    cap_osd => 'allow *',
-    cap_mds => 'allow',
-  }
-
-  ceph::key { 'client.bootstrap-osd':
-    secret  => hiera('ceph-conf::client-bootstrap-osd-key'),
-    cap_mon => 'allow profile bootstrap-osd',
-  }
-
-  ceph::key { 'client.bootstrap-mds':
-    secret  => hiera('ceph-conf::client-bootstrap-mds-key'),
-    cap_mon => 'allow profile bootstrap-mds',
-  }
-
-  ceph::osd { $disk: }
 }
 
 
