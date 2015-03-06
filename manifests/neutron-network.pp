@@ -60,7 +60,7 @@ class opensteak::neutron-network {
 
   # neutron plugin ml2 agent ovs
   class { '::neutron::agents::ml2::ovs': 
-    bridge_uplinks    => ['br-ex:em2', 'br-vm:em5'],
+    bridge_uplinks    => hiera_array('bridge_uplinks'),
     bridge_mappings   => ['physnet-ex:br-ex', 'physnet-vm:br-vm'],
   }
 
