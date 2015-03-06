@@ -43,9 +43,7 @@ class opensteak::neutron-compute {
   }
 
   class { '::neutron::agents::ml2::ovs':
-    # TODO: improve this with hiera variable
-    # Maybe we can set bridge_uplinks without puppet (done by networking scripts)
-    bridge_uplinks    => ['br-vm:eth1'],
+    bridge_uplinks    => hiera_array('bridge_uplinks'),
     bridge_mappings   => ['physnet-vm:br-vm'],
   }
 }
