@@ -20,8 +20,8 @@ class opensteak::ceph-mds {
   if ! defined(Ceph::Key["mds.${::hostname}"]) {
     ceph::key { "mds.${::hostname}":
       inject         => true,
-      inject_as_id   => "mds.${::hostname}",
-      inject_keyring => "/var/lib/ceph/mds/ceph-${::hostname}/keyring",
+      inject_as_id   => 'mon.',
+      inject_keyring => "/var/lib/ceph/mon/ceph-${::hostname}/keyring",
       secret  => hiera('ceph-conf::mds-key'),
       cap_mon => 'allow profile mds',
       cap_osd => 'allow rws',
