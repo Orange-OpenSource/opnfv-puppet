@@ -20,6 +20,11 @@ class opensteak::ceph-client-glance {
       secret       => hiera('ceph-conf::client-glance-key'),
     }
   }
+
+  # Ceph conf needed by Nova
+  ceph_config {
+    'client.glance/key': value => hiera('ceph-conf::client-glance-key');
+  }
 }
 
 

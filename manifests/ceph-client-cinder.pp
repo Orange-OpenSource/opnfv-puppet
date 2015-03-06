@@ -20,6 +20,9 @@ class opensteak::ceph-client-cinder {
       secret       => hiera('ceph-conf::client-cinder-key'),
     }
   }
+
+  # Ceph conf needed by Nova
+  ceph_config {
+    'client.cinder/key': value => hiera('ceph-conf::client-cinder-key');
+  }
 }
-
-
