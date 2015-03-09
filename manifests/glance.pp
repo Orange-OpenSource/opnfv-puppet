@@ -53,6 +53,4 @@ class opensteak::glance {
     rabbit_password => hiera('rabbitmq::password'),
     rabbit_host     => "rabbitmq.${stack_domain}",
   }
-
-  # TODO find a way to push /etc/ceph/ceph.conf
 }

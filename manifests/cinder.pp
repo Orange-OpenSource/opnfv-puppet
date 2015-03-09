@@ -42,12 +42,4 @@ class opensteak::cinder {
     rbd_user        => 'cinder',
     rbd_secret_uuid => hiera('ceph-conf::libvirt-rbd-secret'),
   }
-
-  # Cinder use ceph client command from ceph-common package
-  package { 'ceph-common':
-    ensure => installed,
-  }
-
-  # TODO find a way to push /etc/ceph/ceph.conf
-  # TODO find a way to push /etc/ceph/ceph.client.cinder.keyring & check that this file is needed by cinder
 }
