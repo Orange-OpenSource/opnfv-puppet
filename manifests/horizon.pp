@@ -25,14 +25,16 @@ class opensteak::horizon {
     }
     
     class { '::horizon':
-        servername            => hiera('horizon::publicfqdn'),
+        #servername            => hiera('horizon::publicfqdn'),
+        servername            => $stack_domain,
         keystone_url          => "http://keystone.${stack_domain}:5000/v2.0",
         cache_server_ip       => '127.0.0.1',
         cache_server_port     => '11211',
         secret_key            => hiera('horizon::secret_key'),
         django_debug          => hiera('debug'),
         api_result_limit      => '2000',
-        listen_ssl            => true,
+        #listen_ssl            => true,
+        listen_ssl            => false,
         allowed_hosts         => ['*',],        
         horizon_cert          => '/etc/ssl/certs/ssl-cert-snakeoil.pem',
         horizon_ca            => '/etc/ssl/certs/ssl-cert-snakeoil.pem',
