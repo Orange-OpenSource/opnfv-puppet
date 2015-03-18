@@ -16,6 +16,9 @@ class opensteak::opendaylight {
     
     class { '::opendaylight':
         install_method => 'tarball',
+        extra_features => ['odl-base-all','odl-aaa-authn','odl-restconf',
+            'odl-nsf-all','odl-adsal-northbound','odl-mdsal-apidocs',
+            'odl-ovsdb-plugin', 'odl-ovsdb-openstack']
     }
 
 }

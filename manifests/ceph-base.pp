@@ -14,9 +14,8 @@
 #
 class opensteak::ceph-base {
 
-  $infra_controllers = hiera('infra::controllers')
-  $infra_controllers_names = keys($infra_controllers)
-  $infra_controllers_ip = values($infra_controllers)
+  $infra_controllers_names = $infra_controllers
+  $infra_controllers_ip = inline_template("<%= infra_nodes.select { |keys,_| infra_controllers.include? keys }.values.map{|x| x['ip']} %>")
   $storage_network = hiera('storage::network')
   $storage_netmask = hiera('storage::network_mask')
   $infra_network = hiera('infra::network')
