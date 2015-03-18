@@ -17,6 +17,8 @@ class opensteak::neutron-compute {
 
   $password = hiera('mysql::service-password')
   $stack_domain = hiera('stack::domain')
+  $infra_nodes =  hiera('infra::nodes')
+  $my_bridges = $infra_nodes[$hostname]['bridge_uplinks']
 
   ##
   # Forwarding plane
@@ -43,7 +45,7 @@ class opensteak::neutron-compute {
   }
 
   class { '::neutron::agents::ml2::ovs':
-    bridge_uplinks    => hiera_array('bridge_uplinks'),
+    bridge_uplinks    => join($my_bridges,','),
     bridge_mappings   => ['physnet-vm:br-vm'],
   }
 }
