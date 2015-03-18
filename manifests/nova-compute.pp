@@ -42,7 +42,7 @@ class opensteak::nova-compute {
   class { '::nova::compute':
     enabled                       => true,
     vncserver_proxyclient_address => "nova.${stack_domain}",
-    vncproxy_host                 => hiera("horizon::publicfqdn"),
+    vncproxy_host                 => $stack_domain,
     vnc_keymap                    => 'fr',
   }
 
