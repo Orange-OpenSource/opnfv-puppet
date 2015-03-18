@@ -46,11 +46,13 @@ class opensteak::nova-compute {
     vnc_keymap                    => 'fr',
   }
 
-  class { '::nova::compute::rbd':
-    libvirt_rbd_user        => 'cinder',
-    libvirt_rbd_secret_uuid => hiera('ceph-conf::libvirt-rbd-secret'),
-    libvirt_images_rbd_pool => 'vms',
-    rbd_keyring             => 'client.cinder',
+  if str2bool("$ceph_enabled" ){
+    class { '::nova::compute::rbd':
+      libvirt_rbd_user        => 'cinder',
+      libvirt_rbd_secret_uuid => hiera('ceph-conf::libvirt-rbd-secret'),
+      libvirt_images_rbd_pool => 'vms',
+      rbd_keyring             => 'client.cinder',
+    }
   }
 
   package { 'sysfsutils':
