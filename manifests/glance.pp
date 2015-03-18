@@ -44,7 +44,6 @@ class opensteak::glance {
     class { '::glance::backend::file': }
   }
 
-  
   class { '::glance::registry':
     verbose                 => hiera('verbose'),
     debug                   => hiera('debug'),

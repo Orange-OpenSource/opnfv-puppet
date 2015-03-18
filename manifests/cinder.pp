@@ -17,6 +17,7 @@ class opensteak::cinder {
 
   $stack_domain = hiera('stack::domain')
   $password = hiera('mysql::service-password')
+  $ceph_enabled = hiera('ceph::enabled')
 
   class { '::cinder':
     database_connection => "mysql://cinder:${password}@mysql.${stack_domain}/cinder",
@@ -37,9 +38,11 @@ class opensteak::cinder {
 
   class { '::cinder::volume': }
 
-  class { '::cinder::volume::rbd': 
-    rbd_pool        => 'vms',
-    rbd_user        => 'cinder',
-    rbd_secret_uuid => hiera('ceph-conf::libvirt-rbd-secret'),
+  if str2bool("$ceph_enabled" ){
+    class { '::cinder::volume::rbd': 
+      rbd_pool        => 'vms',
+      rbd_user        => 'cinder',
+      rbd_secret_uuid => hiera('ceph-conf::libvirt-rbd-secret'),
+    }
   }
 }
