@@ -19,6 +19,13 @@ class opensteak::glance {
   $stack_domain = hiera('stack::domain')
   $ceph_enabled = hiera('ceph::enabled')
 
+  if str2bool("$ceph_enabled" ){
+    $known_stores = ['glance.store.rbd.Store']
+  }
+  else{
+    $known_stores = ['glance.store.filesystem.Store']
+  }
+
   class { '::glance::api':
     verbose                 => hiera('verbose'),
     debug                   => hiera('debug'),
@@ -28,7 +35,7 @@ class opensteak::glance {
     database_connection     => "mysql://glance:${password}@mysql.${stack_domain}/glance",
     pipeline                => "keystone",
     show_image_direct_url   => true,
-    known_stores            => ['glance.store.rbd.Store'],
+    known_stores            => $known_stores,
   }
 
   # Temp hack while identity_uri can't be set by glance puppet module
