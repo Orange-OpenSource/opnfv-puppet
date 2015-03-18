@@ -40,6 +40,7 @@ class opensteak::dns {
     # Physical nodes
     $infra_nodes = hiera('infra::nodes')
     $infra_nodes_names = keys($infra_nodes)
+    $infra_nodes_hash = hash(split(inline_template("<% @infra_nodes.each do |node_name, node_values| %><%= node_name %>,<%= node_values['ip'] %>,<% end -%>"),','))
 
     # TOP DNS
     $forwarders = hiera('dns::external')
@@ -99,7 +100,7 @@ class opensteak::dns {
     # Create all records for nodes
     create_a_record { $infra_nodes_names:
       domain     => $stack_domain,
-      vm_ip_hash => $infra_nodes,
+      vm_ip_hash => $infra_nodes_hash,
     }
 
     # DNS record
