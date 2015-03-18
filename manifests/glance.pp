@@ -17,6 +17,7 @@ class opensteak::glance {
 
   $password = hiera('mysql::service-password')
   $stack_domain = hiera('stack::domain')
+  $ceph_enabled = hiera('ceph::enabled')
 
   class { '::glance::api':
     verbose                 => hiera('verbose'),
@@ -33,11 +34,17 @@ class opensteak::glance {
   # Temp hack while identity_uri can't be set by glance puppet module
   glance_api_config { 'keystone_authtoken/identity_uri': value => "http://keystone.${stack_domain}:35357"; }
 
-  class { '::glance::backend::rbd': 
+  if str2bool("$ceph_enabled" ){
+    class { '::glance::backend::rbd': 
     rbd_store_user  => 'glance',
     rbd_store_pool  => 'images',
+    }
+  }
+  else{
+    class { '::glance::backend::file': }
   }
 
+  
   class { '::glance::registry':
     verbose                 => hiera('verbose'),
     debug                   => hiera('debug'),
