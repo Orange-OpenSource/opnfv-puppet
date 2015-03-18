@@ -17,7 +17,6 @@ class opensteak::keystone {
   require opensteak::apt
   
   $password = hiera('mysql::service-password')
-  $domain = hiera('domain')
   $stack_domain = hiera('stack::domain')
 
   package { ['libffi-dev','python-dev']:
