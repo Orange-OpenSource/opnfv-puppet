@@ -16,7 +16,7 @@ class opensteak::ceph-base {
 
   $infra_controllers_names = hiera('infra::ceph-controllers')
   $infra_nodes =  hiera('infra::nodes')
-  $infra_controllers_ip = inline_template("<%= infra_nodes.select { |keys,_| infra_controllers_names.include? keys }.values.map{|x| x['ip']} %>")
+  $infra_controllers_ip = inline_template("<%= infra_nodes.select { |keys,_| infra_controllers_names.include? keys }.values.map{|x| x['ip']}.join(',') %>")
   $storage_network = hiera('storage::network')
   $storage_netmask = hiera('storage::network_mask')
   $infra_network = hiera('infra::network')
@@ -27,7 +27,7 @@ class opensteak::ceph-base {
   class { '::ceph':
     fsid                => hiera('ceph-conf::fsid'),
     mon_initial_members => join($infra_controllers_names,','),
-    mon_host            => join($infra_controllers_ip,','),
+    mon_host            => $infra_controllers_ip, # already joined by ruby
     cluster_network     => "${storage_network}/${storage_netmask}",
     public_network      => "${infra_network}/${infra_netmask}",
   }
