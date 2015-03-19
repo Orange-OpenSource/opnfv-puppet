@@ -9,20 +9,21 @@
 #          David Blaisonneau <david.blaisonneau@orange.com>
 #
 
+
 #
-#  The profile to install keystone
+#  The profile to install keystone base
 #
-class opensteak::keystone {
+class opensteak::keystone-base {
   include pip
   require opensteak::apt
-  
+
   $password = hiera('mysql::service-password')
   $stack_domain = hiera('stack::domain')
 
   package { ['libffi-dev','python-dev']:
     ensure  => present,
   }
-  
+
   pip::install { 'python-openstackclient':
     ensure  => present,
   }
@@ -42,13 +43,35 @@ class opensteak::keystone {
     admin_tenant            => hiera('admin::tenant'),
   }
 
-  class { '::keystone::endpoint':
-    public_url       => "http://keystone.${stack_domain}:5000",
-    admin_url        => "http://keystone.${stack_domain}:35357",
-    region           => hiera('region'),
+#  class { '::keystone::endpoint':
+#    public_url       => "http://keystone.${stack_domain}:5000",
+#    admin_url        => "http://keystone.${stack_domain}:35357",
+#    region           => hiera('region'),
+#  }
+
+  keystone::resource::service_identity { 'keystone':
+    configure_user      => false,
+    configure_user_role => false,
+    configure_service   => false,
+    service_type        => 'identity',
+    service_description => 'OpenStack Identity Service',
+    public_url          => "http://keystone.${stack_domain}:5000",
+    admin_url           => "http://keystone.${stack_domain}:35357",
+    internal_url        => "http://keystone.${stack_domain}:5000",
+    region              => hiera('region'),
   }
-  
+
   class { 'keystone::cron::token_flush': }
+}
+
+#
+#  The profile to install keystone auth
+#
+class opensteak::keystone {
+  require opensteak::keystone
+
+  $password = hiera('mysql::service-password')
+  $stack_domain = hiera('stack::domain')
 
   class { '::glance::keystone::auth':
     password         => hiera('glance::password'),
