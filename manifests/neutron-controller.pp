@@ -36,6 +36,7 @@ class opensteak::neutron-controller {
     database_connection => "mysql://neutron:${password}@mysql.${stack_domain}/neutron",
     enabled             => true,
     sync_db             => true,
+    require             => File['/etc/neutron/plugin.ini'],
   }
   
   # neutron notifications with nova
