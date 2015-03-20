@@ -34,8 +34,6 @@ class opensteak::keystone {
     database_connection     => "mysql://keystone:${password}@mysql.${stack_domain}/keystone",
     rabbit_host             => "rabbitmq.${stack_domain}",
     rabbit_password         => hiera('rabbitmq::password'),
-    client_package_ensure   => "purged",
-    require                 =>  Pip::Install ['python-openstackclient'],
   }
 
   class { '::keystone::roles::admin':
@@ -44,19 +42,10 @@ class opensteak::keystone {
     admin_tenant            => hiera('admin::tenant'),
   }
 
-#  class { '::keystone::endpoint':
-#    public_url       => "http://keystone.${stack_domain}:5000",
-#    admin_url        => "http://keystone.${stack_domain}:35357",
-#    region           => hiera('region'),
-#  }
-
-  keystone::resource::service_identity { 'keystone':
-    password            => hiera('admin::password'),
-    service_type        => 'identity',
-    public_url          => "http://keystone.${stack_domain}:5000",
-    admin_url           => "http://keystone.${stack_domain}:35357",
-    internal_url        => "http://keystone.${stack_domain}:5000",
-    region              => hiera('region'),
+  class { '::keystone::endpoint':
+    public_url       => "http://keystone.${stack_domain}:5000",
+    admin_url        => "http://keystone.${stack_domain}:35357",
+    region           => hiera('region'),
   }
 
   class { 'keystone::cron::token_flush': }
