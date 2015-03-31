@@ -1,0 +1,7 @@
+# This file is handled by puppet, please do not edit it manually
+
+# The loopback network interface
+auto lo
+iface lo inet loopback
+
+source /etc/network/interfaces.d/*.cfg

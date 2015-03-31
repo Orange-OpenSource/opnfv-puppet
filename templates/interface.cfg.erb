@@ -1,0 +1,7 @@
+# This file is handled by puppet, please do not edit it manually
+
+auto <%= interface %>
+iface <%= interface %> inet manual
+    up ip address add 0/0 dev $IFACE
+    up ip link set $IFACE up
+    down ip link set $IFACE down
