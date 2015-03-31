@@ -1,13 +1,19 @@
 class opensteak::base-network (
     $ovs_config = ['br-vm:em5']
 ){
+    package { 'openvswitch-switch':
+        ensure => present,
+    }
+    
     # Create main interface file config
     file { '/etc/network/interfaces':
         source => "puppet:///modules/opensteak/interfaces",
     }
 
     # Create bridges and add each interface in it
-    create_bridge_with_interface { $ovs_config: }
+    create_bridge_with_interface { $ovs_config: 
+        require => Package['openvswitch-switch'],
+    }
 }
 
 define create_bridge_with_interface {
