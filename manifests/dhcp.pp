@@ -15,7 +15,7 @@
 
 include stdlib
 
-#~ Variable structure:
+#~ Variable structure example:
 #~      dnsdomain => ['infra.opensteak.fr','0.168.192.in-addr.arpa','1.168.192.in-addr.arpa','2.168.192.in-addr.arpa']
 #~      interfaces => ['eth0','eth1','eth2']
 #~      pools (YAML vars from foreman):
@@ -50,6 +50,7 @@ class opensteak::dhcp (
             mask    => $pooldef['netmask'],
             range   => $pooldef['range'],
             gateway => $pooldef['gateway'],
+            domain_name => "\"${poolname}\"",
         }
     }   
     mypool{$poolslist:}
