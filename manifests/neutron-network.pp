@@ -12,12 +12,23 @@
 #
 #  The profile to install neutron
 #
-class opensteak::neutron-network {
+class opensteak::neutron-network (
+    $debug              = "false",
+    $verbose            = "false",
+    $region             = "Lannion",
+    $mysql_password     = "password",
+    $stack_domain       = "stack.opensteak.fr",
+    $rabbitmq_password  = "password",
+    $infra_nodes        = { controller1 => 
+                            {   ip => "192.168.1.42" ,
+                                bridge_uplinks => ["br-ex:em2","br-vm:em5"],
+                            }
+                          },
+    $neutron_vlans      = "701:899",
+    $neutron_password   = "password",
+    $neutron_shared     = $neutron_password,
+  ){
   require opensteak::apt
-
-  $password = hiera('mysql::service-password')
-  $stack_domain = hiera('stack::domain')
-  $infra_nodes =  hiera('infra::nodes')
   $my_bridges = $infra_nodes[$hostname]['bridge_uplinks']
 
   ##
@@ -40,10 +51,10 @@ class opensteak::neutron-network {
   ##
   # neutron.conf
   class { '::neutron':
-    debug                 => hiera('debug'),
-    verbose               => hiera('verbose'),
+    debug                 => $debug,
+    verbose               => $verbose,
     rabbit_host           => "rabbitmq.${stack_domain}",
-    rabbit_password       => hiera('rabbitmq::password'),
+    rabbit_password       => $rabbitmq_password,
     core_plugin           => 'ml2',
     service_plugins       => ['router'],
     allow_overlapping_ips => true,
@@ -54,7 +65,7 @@ class opensteak::neutron-network {
     type_drivers          => ['vlan','flat'],
     flat_networks         => ['physnet-ex'],
     tenant_network_types  => ['vlan','flat'],
-    network_vlan_ranges   => ['physnet-vm:701:899'],
+    network_vlan_ranges   => ["physnet-vm:${neutron_vlans}"],
     mechanism_drivers     => ['openvswitch'],
     enable_security_group => true,
     require               => Package['neutron-plugin-openvswitch'],
@@ -67,23 +78,23 @@ class opensteak::neutron-network {
   }
 
   class { '::neutron::agents::l3': 
-    debug                       => hiera('debug'),
+    debug                       => $debug,
     use_namespaces              => true,
     router_delete_namespaces    => true,
   }
 
   class { '::neutron::agents::dhcp':
-    debug                   => hiera('debug'),
+    debug                   => $debug,
     use_namespaces          => true,
     dhcp_delete_namespaces  => true,
   }
 
   class { '::neutron::agents::metadata':
-    auth_password => hiera('neutron::password'),
-    shared_secret => hiera('neutron::shared-secret'),
+    auth_password => $neutron_password,
+    shared_secret => $neutron_shared,
     auth_url      => "http://keystone.${stack_domain}:35357/v2.0",
-    debug         => hiera('debug'),
-    auth_region   => hiera('region'),
+    debug         => $debug,
+    auth_region   => $region,
     metadata_ip   => "nova.${stack_domain}",
   }
 

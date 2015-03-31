@@ -12,20 +12,25 @@
 #
 # The profile to install ceph
 #
-class opensteak::ceph-base {
-
-  $infra_controllers_names = hiera('infra::ceph-controllers')
-  $infra_nodes =  hiera('infra::nodes')
+class opensteak::ceph-base (
+    $infra_controllers_names    = ["controller1"],
+    $infra_nodes                = { controller1 => 
+                                    {   ip => "192.168.1.42" ,
+                                        bridge_uplinks => ["br-ex:em2","br-vm:em5"],
+                                    }
+                                  },
+    $storage_network            = "192.168.0.0",
+    $storage_netmask            = "24",
+    $infra_network              = "192.168.1.0",
+    $infra_netmask              = "24",
+    $fsid                       = "77a16382-8b32-476d-89b8-5ac5381209b7",
+  ){
   $infra_controllers_ip = inline_template("<%= infra_nodes.select { |keys,_| infra_controllers_names.include? keys }.values.map{|x| x['ip']}.join(',') %>")
-  $storage_network = hiera('storage::network')
-  $storage_netmask = hiera('storage::network_mask')
-  $infra_network = hiera('infra::network')
-  $infra_netmask = hiera('infra::network_mask')
-
+  
   class { '::ceph::repo': }
 
   class { '::ceph':
-    fsid                => hiera('ceph-conf::fsid'),
+    fsid                => $fsid,
     mon_initial_members => join($infra_controllers_names,','),
     mon_host            => $infra_controllers_ip, # already joined by ruby
     cluster_network     => "${storage_network}/${storage_netmask}",

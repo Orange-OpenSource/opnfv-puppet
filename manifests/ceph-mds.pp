@@ -12,7 +12,9 @@
 #
 # The profile to install ceph MDS
 #
-class opensteak::ceph-mds {
+class opensteak::ceph-mds (
+    $mds_key = "AQC0g8tUGCzgAxAAbiynJ/yvu463DcMESVVbXw==",
+  ){
   require opensteak::ceph-base
 
   class { '::ceph::mds':  }
@@ -22,7 +24,7 @@ class opensteak::ceph-mds {
       inject         => true,
       inject_as_id   => 'mon.',
       inject_keyring => "/var/lib/ceph/mon/ceph-${::hostname}/keyring",
-      secret  => hiera('ceph-conf::mds-key'),
+      secret  => $mds_key,
       cap_mon => 'allow profile mds',
       cap_osd => 'allow rws',
       cap_mds => 'allow',

@@ -12,12 +12,21 @@
 #
 #  The profile to install neutron
 #
-class opensteak::neutron-compute {
+class opensteak::neutron-compute (
+    $debug              = "false",
+    $verbose            = "false",
+    $region             = "Lannion",
+    $mysql_password     = "password",
+    $stack_domain       = "stack.opensteak.fr",
+    $rabbitmq_password  = "password",
+    $infra_nodes        = { controller1 => 
+                            {   ip => "192.168.1.42" ,
+                                bridge_uplinks => ["br-ex:em2","br-vm:em5"],
+                            }
+                          },
+  ){
   require opensteak::apt
 
-  $password = hiera('mysql::service-password')
-  $stack_domain = hiera('stack::domain')
-  $infra_nodes =  hiera('infra::nodes')
   $my_bridges = $infra_nodes[$hostname]['bridge_uplinks']
 
   ##
@@ -35,10 +44,10 @@ class opensteak::neutron-compute {
   # Neutron
   ##
   class { '::neutron':
-    debug                 => hiera('debug'),
-    verbose               => hiera('verbose'),
+    debug                 => $debug,
+    verbose               => $verbose,
     rabbit_host           => "rabbitmq.${stack_domain}",
-    rabbit_password       => hiera('rabbitmq::password'),
+    rabbit_password       => $rabbitmq_password,
     core_plugin           => 'ml2',
     service_plugins       => ['router'],
     allow_overlapping_ips => true,

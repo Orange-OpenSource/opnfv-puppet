@@ -12,26 +12,33 @@
 #
 #  The profile to install (nova controller part)
 #
-class opensteak::nova {
+class opensteak::nova (
+    $debug              = "false",
+    $verbose            = "false",
+    $region             = "Lannion",
+    $mysql_password     = "password",
+    $stack_domain       = "stack.opensteak.fr",
+    $rabbitmq_password  = "password",
+    $nova_password      = "password",
+    $neutron_password   = "password",
+    $neutron_shared     = $neutron_password,
+  ){
   require opensteak::apt
 
-  $password = hiera('mysql::service-password')
-  $stack_domain = hiera('stack::domain')
-
   class { '::nova':
-    verbose             => hiera('verbose'),
-    debug               => hiera('debug'),
-    database_connection => "mysql://nova:${password}@mysql.${stack_domain}/nova",
+    verbose             => $verbose,
+    debug               => $debug,
+    database_connection => "mysql://nova:${mysql_password}@mysql.${stack_domain}/nova",
     glance_api_servers  => "http://glance.${stack_domain}:9292",
     rabbit_host         => "rabbitmq.${stack_domain}",
-    rabbit_password     => hiera('rabbitmq::password'),
+    rabbit_password     => $rabbitmq_password,
   }
 
   class { '::nova::api':
-    admin_password                        => hiera('nova::password'),
+    admin_password                        => $nova_password,
     auth_host                             => "keystone.${stack_domain}",
     enabled                               => true,
-    neutron_metadata_proxy_shared_secret  => hiera('neutron::shared-secret'),
+    neutron_metadata_proxy_shared_secret  => $neutron_shared,
   }
 
   class { [
@@ -44,8 +51,8 @@ class opensteak::nova {
   }
 
   class { '::nova::network::neutron':
-    neutron_admin_password => hiera('neutron::password'),
-    neutron_region_name    => hiera('region'),
+    neutron_admin_password => $neutron_password,
+    neutron_region_name    => $region,
     neutron_admin_auth_url => "http://keystone.${stack_domain}:35357/v2.0",
     neutron_url            => "http://neutron.${stack_domain}:9696",
   }

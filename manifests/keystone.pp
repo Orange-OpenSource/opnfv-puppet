@@ -12,12 +12,24 @@
 #
 #  The profile to install keystone
 #
-class opensteak::keystone {
+class opensteak::keystone (
+    $debug              = "false",
+    $verbose            = "false",
+    $region             = "Lannion",
+    $mysql_password     = "password",
+    $stack_domain       = "stack.opensteak.fr",
+    $rabbitmq_password  = "password",
+    $keystone_token     = "password",
+    $admin_mail         = "contact@opensteak.fr",
+    $admin_password     = "password",
+    $admin_tenant       = "admin",
+    $glance_password    = "password",
+    $neutron_password   = "password",
+    $nova_password      = "password",
+    $cinder_password    = "password",
+  ){
   include pip
   require opensteak::apt
-
-  $password = hiera('mysql::service-password')
-  $stack_domain = hiera('stack::domain')
 
   package { ['libffi-dev','python-dev']:
     ensure  => present,
@@ -28,57 +40,57 @@ class opensteak::keystone {
   }
 
   class { '::keystone':
-    verbose                 => hiera('verbose'),
-    debug                   => hiera('debug'),
-    admin_token             => hiera('keystone::admin-token'),
-    database_connection     => "mysql://keystone:${password}@mysql.${stack_domain}/keystone",
+    verbose                 => $verbose,
+    debug                   => $debug,
+    admin_token             => $keystone_token,
+    database_connection     => "mysql://keystone:${mysql_password}@mysql.${stack_domain}/keystone",
     rabbit_host             => "rabbitmq.${stack_domain}",
-    rabbit_password         => hiera('rabbitmq::password'),
+    rabbit_password         => $rabbitmq_password,
   }
 
   class { '::keystone::roles::admin':
-    email                   => hiera('admin::mail'),
-    password                => hiera('admin::password'),
-    admin_tenant            => hiera('admin::tenant'),
+    email                   => $admin_mail,
+    password                => $admin_password,
+    admin_tenant            => $admin_tenant,
   }
 
   class { '::keystone::endpoint':
     public_url       => "http://keystone.${stack_domain}:5000",
     admin_url        => "http://keystone.${stack_domain}:35357",
-    region           => hiera('region'),
+    region           => $region,
   }
 
   class { 'keystone::cron::token_flush': }
 
   class { '::glance::keystone::auth':
-    password         => hiera('glance::password'),
+    password         => $glance_password,
     public_address   => "glance.${stack_domain}",
     admin_address    => "glance.${stack_domain}",
     internal_address => "glance.${stack_domain}",
-    region           => hiera('region'),
+    region           => $region,
   }
 
   class { '::nova::keystone::auth':
-    password         => hiera('nova::password'),
+    password         => $nova_password,
     public_address   => "nova.${stack_domain}",
     admin_address    => "nova.${stack_domain}",
     internal_address => "nova.${stack_domain}",
-    region           => hiera('region'),
+    region           => $region,
   }
 
   class { '::neutron::keystone::auth':
-    password         => hiera('neutron::password'),
+    password         => $neutron_password,
     public_address   => "neutron.${stack_domain}",
     admin_address    => "neutron.${stack_domain}",
     internal_address => "neutron.${stack_domain}",
-    region           => hiera('region'),
+    region           => $region,
   }
 
   class { '::cinder::keystone::auth':
-    password         => hiera('cinder::password'),
+    password         => $cinder_password,
     public_address   => "cinder.${stack_domain}",
     admin_address    => "cinder.${stack_domain}",
     internal_address => "cinder.${stack_domain}",
-    region           => hiera('region'),
+    region           => $region,
   }
 }

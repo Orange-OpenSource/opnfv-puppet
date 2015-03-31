@@ -12,18 +12,20 @@
 #
 # The profile to install ceph glance client
 #
-class opensteak::ceph-client-glance {
+class opensteak::ceph-client-glance (
+    $secret = "AQB6ns9UWJCEBhAAz1632+o+zxgMLGrXlp3rHQ=="
+  ){
   require opensteak::ceph-base
 
   if ! defined(Ceph::Key['client.glance']) {
     ceph::key { 'client.glance':
-      secret       => hiera('ceph-conf::client-glance-key'),
+      secret       => $secret,
     }
   }
 
   # Ceph conf needed by Nova
   ceph_config {
-    'client.glance/key': value => hiera('ceph-conf::client-glance-key');
+    'client.glance/key': value => $secret;
   }
 }
 

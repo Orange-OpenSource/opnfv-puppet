@@ -12,11 +12,18 @@
 #
 # The profile to install ceph monitors
 #
-class opensteak::ceph-mon {
+class opensteak::ceph-mon (
+    $mon_key    = "AQAJcMpUAAAAABAAXUZk1mOusq5pyOmnhBfElg==",
+    $admin_key  = "AQBvW8tUMKg7FBAABuiYm434KAYTilIaESJaAQ==",
+    $osd_key    = "AQBvW8tUyOFPKRAA9OC5DmhyLLmHuE5f+qKbgQ==",
+    $mds_key    = "AQBwW8tU4LdvAhAA2VO8W9/M0TQFf4xl14tUBA==",
+    $cinder_key = "AQAPns9UUBRDEhAAX3UhTWUw6OXTjw/TPv6wdw==",
+    $glance_key = "AQB6ns9UWJCEBhAAz1632+o+zxgMLGrXlp3rHQ==",
+  ){
   require opensteak::ceph-base
 
   ceph::mon { $::hostname:
-    key => hiera('ceph-conf::mon-key'),
+    key => $mon_key,
   }
 
   Ceph::Key {
@@ -26,36 +33,30 @@ class opensteak::ceph-mon {
   }
 
   ceph::key { 'client.admin':
-    secret  => hiera('ceph-conf::client-admin-key'),
+    secret  => $admin_key,
     cap_mon => 'allow *',
     cap_osd => 'allow *',
     cap_mds => 'allow',
   }
 
   ceph::key { 'client.bootstrap-osd':
-    secret  => hiera('ceph-conf::client-bootstrap-osd-key'),
+    secret  => $osd_key,
     cap_mon => 'allow profile bootstrap-osd',
   }
 
   ceph::key { 'client.bootstrap-mds':
-    secret  => hiera('ceph-conf::client-bootstrap-mds-key'),
+    secret  => $mds_key,
     cap_mon => 'allow profile bootstrap-mds',
   }
 
   ceph::key { 'client.cinder':
-    secret          => hiera('ceph-conf::client-cinder-key'),
+    secret          => $cinder_key,
     cap_mon         => 'allow r',
     cap_osd         => 'allow class-read object_prefix rbd_children, allow rwx pool=volumes, allow rwx pool=vms, allow rx pool=images',
   }
 
-  ceph::key { 'client.cinder-backup':
-    secret          => hiera('ceph-conf::client-cinder-backup-key'),
-    cap_mon         => 'allow r',
-    cap_osd         => 'allow class-read object_prefix rbd_children, allow rwx pool=backups',
-  }
-
   ceph::key { 'client.glance':
-    secret          => hiera('ceph-conf::client-glance-key'),
+    secret          => $glance_key,
     cap_mon         => 'allow r',
     cap_osd         => 'allow class-read object_prefix rbd_children, allow rwx pool=images',
   }

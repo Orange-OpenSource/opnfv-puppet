@@ -12,23 +12,29 @@
 #
 # The profile to install the dns machine
 #
-class opensteak::cinder {
+class opensteak::cinder (
+    $debug              = "false",
+    $verbose            = "false",
+    $region             = "Lannion",
+    $mysql_password     = "password",
+    $stack_domain       = "stack.opensteak.fr",
+    $rabbitmq_password  = "password",
+    $cinder_password    = "password",
+    $ceph_enabled       = false,
+    $libvirt_rbd_secret = "457eb676-33da-42ec-9a8c-9293d545c337",
+  ){
   require opensteak::apt
 
-  $stack_domain = hiera('stack::domain')
-  $password = hiera('mysql::service-password')
-  $ceph_enabled = hiera('ceph::enabled')
-
   class { '::cinder':
-    database_connection => "mysql://cinder:${password}@mysql.${stack_domain}/cinder",
+    database_connection => "mysql://cinder:${mysql_password}@mysql.${stack_domain}/cinder",
     rabbit_host         => "rabbitmq.${stack_domain}",
-    rabbit_password     => hiera('rabbitmq::password'),
-    debug               => hiera('debug'),
-    verbose             => hiera('verbose'),
+    rabbit_password     => $rabbitmq_password,
+    debug               => $debug,
+    verbose             => $verbose,
   }
 
   class { 'cinder::api':
-    keystone_password   => hiera('cinder::password'),
+    keystone_password   => $cinder_password,
     keystone_auth_host  => "keystone.${stack_domain}",
   }
 
@@ -38,11 +44,11 @@ class opensteak::cinder {
 
   class { '::cinder::volume': }
 
-  if str2bool("$ceph_enabled" ){
+  if $ceph_enabled {
     class { '::cinder::volume::rbd': 
       rbd_pool        => 'vms',
       rbd_user        => 'cinder',
-      rbd_secret_uuid => hiera('ceph-conf::libvirt-rbd-secret'),
+      rbd_secret_uuid => $libvirt_rbd_secret,
     }
   }
 }

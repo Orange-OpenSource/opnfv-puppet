@@ -12,11 +12,12 @@
 #
 #  The profile to install (nova controller part)
 #
-class opensteak::key {
-  $tenant = hiera('admin::tenant')
-  $username = 'admin'
-  $password = hiera('admin::password')
-  $stack_domain = hiera('stack::domain')
+class opensteak::key (
+    $tenant         = "admin",
+    $username       = "admin",
+    $mysql_password = "password",
+    $stack_domain   = "stack.opensteak.fr",
+  ){
 
   file { '/root/os-creds-admin':
     mode    => '0770',
@@ -24,7 +25,7 @@ class opensteak::key {
     content => "#!/bin/bash
 export OS_TENANT_NAME=$tenant
 export OS_USERNAME=$username
-export OS_PASSWORD=$password
+export OS_PASSWORD=$mysql_password
 export OS_AUTH_URL=http://keystone.${stack_domain}:35357/v2.0"
   }
 

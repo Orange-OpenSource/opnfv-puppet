@@ -12,11 +12,13 @@
 #
 #  The profile to install mysql
 #
-class opensteak::mysql {
-
+class opensteak::mysql (
+    $root_password  = "password",
+    $mysql_password = "password",
+  ){
 
   class { '::mysql::server':
-    root_password                   => hiera("mysql::root-password"),
+    root_password                   => $root_password,
     override_options                => {
       'mysqld'                      => {
         'bind-address'              => '0.0.0.0' ,
@@ -38,31 +40,31 @@ class opensteak::mysql {
 
   # Keystone
   class { '::keystone::db::mysql':
-    password      => hiera('mysql::service-password'),
+    password      => $mysql_password,
     allowed_hosts => '%',
   }
 
   # Glance
   class { '::glance::db::mysql':
-    password      => hiera('mysql::service-password'),
+    password      => $mysql_password,
     allowed_hosts => '%',
   }
 
   # Nova
   class { '::nova::db::mysql':
-    password      => hiera('mysql::service-password'),
+    password      => $mysql_password,
     allowed_hosts => '%',
   }
 
   # Neutron
   class { '::neutron::db::mysql':
-    password      => hiera('mysql::service-password'),
+    password      => $mysql_password,
     allowed_hosts => '%',
   }
   
   # Cinder
   class { '::cinder::db::mysql':
-    password      => hiera('mysql::service-password'),
+    password      => $mysql_password,
     allowed_hosts => '%',
   }
 }

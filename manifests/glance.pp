@@ -12,14 +12,19 @@
 #
 #  The profile to install glance
 #
-class opensteak::glance {
+class opensteak::glance (
+    $debug              = "false",
+    $verbose            = "false",
+    $region             = "Lannion",
+    $mysql_password     = "password",
+    $stack_domain       = "stack.opensteak.fr",
+    $rabbitmq_password  = "password",
+    $glance_password    = "password",
+    $ceph_enabled       = false,
+  ){
   require opensteak::apt
 
-  $password = hiera('mysql::service-password')
-  $stack_domain = hiera('stack::domain')
-  $ceph_enabled = hiera('ceph::enabled')
-
-  if str2bool("$ceph_enabled" ){
+  if $ceph_enabled {
     $known_stores = ['glance.store.rbd.Store']
   }
   else{
@@ -27,12 +32,12 @@ class opensteak::glance {
   }
 
   class { '::glance::api':
-    verbose                 => hiera('verbose'),
-    debug                   => hiera('debug'),
+    verbose                 => $verbose,
+    debug                   => $debug,
     auth_host               => "keystone.${stack_domain}",
     auth_uri                => "http://keystone.${stack_domain}:5000/v2.0",
-    keystone_password       => hiera('glance::password'),
-    database_connection     => "mysql://glance:${password}@mysql.${stack_domain}/glance",
+    keystone_password       => $glance_password,
+    database_connection     => "mysql://glance:${mysql_password}@mysql.${stack_domain}/glance",
     pipeline                => "keystone",
     show_image_direct_url   => true,
     known_stores            => $known_stores,
@@ -41,7 +46,7 @@ class opensteak::glance {
   # Temp hack while identity_uri can't be set by glance puppet module
   glance_api_config { 'keystone_authtoken/identity_uri': value => "http://keystone.${stack_domain}:35357"; }
 
-  if str2bool("$ceph_enabled" ){
+  if $ceph_enabled {
     class { '::glance::backend::rbd': 
     rbd_store_user  => 'glance',
     rbd_store_pool  => 'images',
@@ -52,10 +57,10 @@ class opensteak::glance {
   }
 
   class { '::glance::registry':
-    verbose                 => hiera('verbose'),
-    debug                   => hiera('debug'),
-    keystone_password       => hiera('glance::password'),
-    database_connection     => "mysql://glance:${password}@mysql.${stack_domain}/glance",
+    verbose                 => $verbose,
+    debug                   => $debug,
+    keystone_password       => $glance_password,
+    database_connection     => "mysql://glance:${mysql_password}@mysql.${stack_domain}/glance",
     auth_host               => "keystone.${stack_domain}",
   }
 
@@ -63,7 +68,7 @@ class opensteak::glance {
   glance_registry_config { 'keystone_authtoken/identity_uri': value => "http://keystone.${stack_domain}:35357"; }
 
   class { '::glance::notify::rabbitmq': 
-    rabbit_password => hiera('rabbitmq::password'),
+    rabbit_password => $rabbitmq_password,
     rabbit_host     => "rabbitmq.${stack_domain}",
   }
 }

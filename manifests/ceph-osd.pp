@@ -12,7 +12,9 @@
 #
 # The profile to install ceph OSDs
 #
-class opensteak::ceph-osd {
+class opensteak::ceph-osd (
+    $secret = "AQBvW8tUyOFPKRAA9OC5DmhyLLmHuE5f+qKbgQ==",
+  ){
   require opensteak::ceph-base
 
   ceph::osd { $disk: }
@@ -20,7 +22,7 @@ class opensteak::ceph-osd {
   if ! defined(Ceph::Key['client.bootstrap-osd']) {
     ceph::key { 'client.bootstrap-osd':
       keyring_path => '/var/lib/ceph/bootstrap-osd/ceph.keyring',
-      secret       => hiera('ceph-conf::client-bootstrap-osd-key'),
+      secret       => $secret,
     }
   }
 }

@@ -12,17 +12,19 @@
 #
 # The profile to install ceph cinder client
 #
-class opensteak::ceph-client-cinder {
+class opensteak::ceph-client-cinder (
+    $secret = "AQAPns9UUBRDEhAAX3UhTWUw6OXTjw/TPv6wdw==",
+  ){
   require opensteak::ceph-base
 
   if ! defined(Ceph::Key['client.cinder']) {
     ceph::key { 'client.cinder':
-      secret       => hiera('ceph-conf::client-cinder-key'),
+      secret       => $secret,
     }
   }
 
   # Ceph conf needed by Nova
   ceph_config {
-    'client.cinder/key': value => hiera('ceph-conf::client-cinder-key');
+    'client.cinder/key': value => $secret;
   }
 }

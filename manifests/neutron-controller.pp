@@ -12,18 +12,25 @@
 #
 #  The profile to install neutron
 #
-class opensteak::neutron-controller {
+class opensteak::neutron-controller (
+    $debug              = "false",
+    $verbose            = "false",
+    $region             = "Lannion",
+    $mysql_password     = "password",
+    $stack_domain       = "stack.opensteak.fr",
+    $rabbitmq_password  = "password",
+    $neutron_password   = "password",
+    $nova_password      = "password",
+    $neutron_vlans      = "701:899",
+  ){
   require opensteak::apt
-
-  $password = hiera('mysql::service-password')
-  $stack_domain = hiera('stack::domain')
 
   # neutron.conf
   class { '::neutron':
-    debug                 => hiera('debug'),
-    verbose               => hiera('verbose'),
+    debug                 => $debug,
+    verbose               => $verbose,
     rabbit_host           => "rabbitmq.${stack_domain}",
-    rabbit_password       => hiera('rabbitmq::password'),
+    rabbit_password       => $rabbitmq_password,
     core_plugin           => 'ml2',
     service_plugins       => ['router'],
     allow_overlapping_ips => true,
@@ -32,19 +39,19 @@ class opensteak::neutron-controller {
   # neutron api server
   class { '::neutron::server':
     auth_host           => "keystone.${stack_domain}",
-    auth_password       => hiera('neutron::password'),
-    database_connection => "mysql://neutron:${password}@mysql.${stack_domain}/neutron",
+    auth_password       => $neutron_password,
+    database_connection => "mysql://neutron:${mysql_password}@mysql.${stack_domain}/neutron",
     enabled             => true,
     sync_db             => true,
     require             => File['/etc/neutron/plugin.ini'],
   }
-  
+
   # neutron notifications with nova
   class { '::neutron::server::notifications':
     nova_url            => "http://nova.${stack_domain}:8774/v2",
     nova_admin_auth_url => "http://keystone.${stack_domain}:35357/v2.0",
-    nova_admin_password => hiera('nova::password'),
-    nova_region_name    => hiera('region'),
+    nova_admin_password => $nova_password,
+    nova_region_name    => $region,
   }
 
   # neutron plugin ml2
@@ -52,7 +59,7 @@ class opensteak::neutron-controller {
     type_drivers          => ['vlan','flat'],
     flat_networks         => ['physnet-ex'],
     tenant_network_types  => ['vlan','flat'],
-    network_vlan_ranges   => ['physnet-vm:701:899'],
+    network_vlan_ranges   => ["physnet-vm:${neutron_vlans}"],
     mechanism_drivers     => ['openvswitch'],
     enable_security_group => true,
     require               => Package['neutron-plugin-openvswitch'],
