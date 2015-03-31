@@ -3,7 +3,7 @@ class opensteak::base-network (
 ){
     # Create main interface file config
     file { '/etc/network/interfaces':
-        source => "puppet:///modules/testarnaud/interfaces",
+        source => "puppet:///modules/opensteak/interfaces",
     }
 
     # Create bridges and add each interface in it
@@ -33,14 +33,14 @@ define create_bridge_with_interface {
     exec { "/sbin/ifdown ${interface}": }
     ->
     file { "/etc/network/interfaces.d/${interface}.cfg":
-        content => template("testarnaud/interface.cfg.erb"),
+        content => template("opensteak/interface.cfg.erb"),
         require => Vs_port[$interface],
     }
     ->
     exec { "/sbin/ifup ${interface}":}
     ->
     file { "/etc/network/interfaces.d/${bridge}.cfg":
-        content => template("testarnaud/bridge.cfg.erb"),
+        content => template("opensteak/bridge.cfg.erb"),
     }
     ->
     exec { "/sbin/ifdown ${bridge} && /sbin/ifup ${bridge}":}
