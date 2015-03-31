@@ -1,29 +1,33 @@
 class opensteak::base-network (
-    $ovs_config = ['br-vm:em5']
+    $ovs_config = ['br-adm:em3:dhcp','br-vm:em5:dhcp','br-ex:em2:none']
 ){
     package { 'openvswitch-switch':
         ensure => present,
     }
 
+    # Create main interface file config *before* creating bridges as
+    # we must get back the interfaces file from puppet master
+    file { '/etc/network/interfaces':
+        source  => "puppet:///modules/opensteak/interfaces",
+        before  => Create_bridge_with_interface[$ovs_config],
+    }
+
     # Create bridges and add each interface in it
     create_bridge_with_interface { $ovs_config:
         require => Package['openvswitch-switch'],
-        before  => File['/etc/network/interfaces'],
     }
 
-    # Create main interface file config
-    file { '/etc/network/interfaces':
-        source   => "puppet:///modules/opensteak/interfaces",
-    }
+    # Reboot when config is updated
     reboot { 'after':
-        subscribe => File['/etc/network/interfaces'],
+        subscribe => [File['/etc/network/interfaces'],Create_bridge_with_interface[$ovs_config]],
     }
 }
 
 define create_bridge_with_interface {
-    $value = split($name,':')
-    $bridge = $value[0]
-    $interface = $value[1]
+    $value      = split($name,':')
+    $bridge     = $value[0]
+    $interface  = $value[1]
+    $config     = $value[2]
 
     vs_bridge {$bridge:
         ensure => present,
@@ -39,8 +43,10 @@ define create_bridge_with_interface {
         content => template("opensteak/interface.cfg.erb"),
         require => Vs_port[$interface],
     }
-
-    file { "/etc/network/interfaces.d/${bridge}.cfg":
-        content => template("opensteak/bridge.cfg.erb"),
+    
+    if $config == 'dhcp' {
+        file { "/etc/network/interfaces.d/${bridge}.cfg":
+            content => template("opensteak/bridge.cfg.erb"),
+        }
     }
 }
