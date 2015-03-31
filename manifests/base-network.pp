@@ -1,3 +1,18 @@
+#
+# Copyright (C) 2014 Orange Labs
+# 
+# This software is distributed under the terms and conditions of the 'Apache-2.0'
+# license which can be found in the file 'LICENSE.txt' in this package distribution 
+# or at 'http://www.apache.org/licenses/LICENSE-2.0'. 
+#
+# Authors: Arnaud Morin <arnaud1.morin@orange.com> 
+#          David Blaisonneau <david.blaisonneau@orange.com>
+#
+
+#
+#  The profile to install network (to be run with foreman)
+#
+
 class opensteak::base-network (
     $ovs_config = ['br-adm:em3:dhcp','br-vm:em5:dhcp','br-ex:em2:none']
 ){
