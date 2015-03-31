@@ -9,17 +9,16 @@ class opensteak::base-network (
     # we must get back the interfaces file from puppet master
     file { '/etc/network/interfaces':
         source  => "puppet:///modules/opensteak/interfaces",
-        before  => Create_bridge_with_interface[$ovs_config],
     }
 
     # Create bridges and add each interface in it
     create_bridge_with_interface { $ovs_config:
-        require => Package['openvswitch-switch'],
+        require => [File['/etc/network/interfaces'],Package['openvswitch-switch']],
     }
 
     # Reboot when config is updated
     reboot { 'after':
-        subscribe => [File['/etc/network/interfaces'],Create_bridge_with_interface[$ovs_config]],
+        subscribe => Create_bridge_with_interface[$ovs_config],
     }
 }
 
