@@ -23,12 +23,7 @@ class opensteak::libvirt (
     class { '::libvirt':
         mdns_adv => false
     }
-
-    libvirt_pool { 'default' :
-        ensure   => present,
-        type     => 'dir',
-        target   => $default_pool_target,
-    }
+    
     if ( $sshkey ){
         sshkey { $sshkey_owner:
             ensure => present,
