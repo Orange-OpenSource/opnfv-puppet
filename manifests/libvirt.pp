@@ -15,9 +15,10 @@
 #
 
 class opensteak::libvirt (
-    $sshkey,
+    $default_pool_target = '/var/lib/libvirt/images',
+    $sshkey = false,
     $sshkey_owner = 'foreman@foreman',
-    $ceph = false,
+    $sshkey_type = 'rsa',
 ){
     class { '::libvirt':
         mdns_adv => false
@@ -26,11 +27,13 @@ class opensteak::libvirt (
     libvirt_pool { 'default' :
         ensure   => present,
         type     => 'dir',
-        target   => '/var/lib/libvirt/images',
+        target   => $default_pool_target,
     }
-    sshkey { $sshkey_owner:
-        ensure => present,
-        type => "rsa",
-        key  => $sshkey,
+    if ( $sshkey ){
+        sshkey { $sshkey_owner:
+            ensure => present,
+            type => $sshkey_type,
+            key  => $sshkey,
+        }
     }
 }
