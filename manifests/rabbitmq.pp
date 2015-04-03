@@ -20,8 +20,9 @@ class opensteak::rabbitmq (
   }
 
   exec { 'rabbitmq-change-guest-password':
-    command     => "rabbitmqctl change_password guest $rabbitmq_password",
-    subscribe => Package['rabbitmq-server'],
+    command     => "/usr/sbin/rabbitmqctl change_password guest $rabbitmq_password",
+    subscribe   => Package['rabbitmq-server'],
+    require     => Package['rabbitmq-server'],
     refreshonly => true
   }
 }
