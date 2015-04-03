@@ -1,4 +1,3 @@
-
 #
 # Copyright (C) 2014 Orange Labs
 # 
@@ -16,24 +15,40 @@
 
 class opensteak::libvirt (
     $default_pool_target = '/var/lib/libvirt/images',
-    $sshkey = false,
-    $sshkey_owner = 'foreman@foreman',
-    $sshkey_type = 'rsa',
+    $sshkey_value = $global_sshkey, # waiting Hammer cli PR 153 - https://github.com/theforeman/hammer-cli-foreman/pull/153
+    $sshkey_user = 'foreman@foreman',
+    $sshkey_type = 'ssh-rsa',
+    $user = 'ubuntu',
 ){
+    #~ Install libvirt
     class { '::libvirt':
         mdns_adv => false
     }
-
-    libvirt_pool { 'default' :
-        ensure   => present,
-        type     => 'dir',
-        target   => $default_pool_target,
+    
+    #~ Install and configure policykit for a remote usage of libvirt
+    package{ "policykit-1":
+        ensure  => present,
     }
-    if ( $sshkey ){
-        sshkey { $sshkey_owner:
+    
+    $polkit = "[Allow $user libvirt management permissions]
+Identity=unix-user:$user
+Action=org.libvirt.unix.manage
+ResultAny=yes
+ResultInactive=yes
+ResultActive=yes"
+    file {  '/etc/polkit-1/localauthority/50-local.d/libvirt':
+        ensure  => present,
+        content => $polkit,
+        require => Package["policykit-1"],
+    }
+    
+    #~ Add ssh key to have direct connection
+    if ( $sshkey_value ){
+        ssh_authorized_key { $sshkey_owner:
+            user => $user,
             ensure => present,
             type => $sshkey_type,
-            key  => $sshkey,
+            key  => $sshkey_value,
         }
     }
 }
