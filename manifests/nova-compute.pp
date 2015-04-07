@@ -18,6 +18,7 @@ class opensteak::nova-compute (
     $region             = "Lannion",
     $mysql_password     = "password",
     $stack_domain       = "stack.opensteak.fr",
+    $rabbitmq_password  = "password",
     $neutron_password   = "password",
     $ceph_enabled       = false,
     $libvirt_rbd_secret = "457eb676-33da-42ec-9a8c-9293d545c337",
