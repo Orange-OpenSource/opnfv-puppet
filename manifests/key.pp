@@ -15,7 +15,7 @@
 class opensteak::key (
     $tenant         = "admin",
     $username       = "admin",
-    $mysql_password = "password",
+    $password       = "password",
     $stack_domain   = "stack.opensteak.fr",
   ){
 
@@ -25,7 +25,7 @@ class opensteak::key (
     content => "#!/bin/bash
 export OS_TENANT_NAME=$tenant
 export OS_USERNAME=$username
-export OS_PASSWORD=$mysql_password
+export OS_PASSWORD=$password
 export OS_AUTH_URL=http://keystone.${stack_domain}:35357/v2.0"
   }
 
