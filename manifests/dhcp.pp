@@ -41,16 +41,23 @@ class opensteak::dhcp (
         dnsupdatekey => "/etc/bind/rndc.key",
         pxeserver    => $pxeserver,
         pxefilename  => $pxefilename,
+        option_static_route => true, 
     }
     $poolslist = keys($pools['pools'])
     define mypool($poolname = $title){
         $pooldef = $opensteak::dhcp::pools['pools'][$poolname]
+        if $pooldef['gateway']{
+                $static_routes = [ { 'mask' => '32', 'network' => '169.254.169.254', 'gateway' => $ip } ]
+        }else{
+                $static_routes = undef
+        }
         dhcp::pool{ "pool_${poolname}":
             network => $pooldef['network'],
             mask    => $pooldef['netmask'],
             range   => $pooldef['range'],
             gateway => $pooldef['gateway'],
             domain_name => "\"${poolname}\"",
+            static_routes => $static_routes,
         }
     }   
     mypool{$poolslist:}
