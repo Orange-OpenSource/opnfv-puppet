@@ -73,7 +73,7 @@ class opensteak::neutron-network (
 
   # neutron plugin ml2 agent ovs
   class { '::neutron::agents::ml2::ovs': 
-    bridge_uplinks    => join($my_bridges,','),
+    bridge_uplinks    => $my_bridges,
     bridge_mappings   => ['physnet-ex:br-ex', 'physnet-vm:br-vm'],
   }
 
