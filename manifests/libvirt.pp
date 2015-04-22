@@ -44,7 +44,7 @@ ResultActive=yes"
     
     #~ Add ssh key to have direct connection
     if ( $sshkey_value ){
-        ssh_authorized_key { $sshkey_owner:
+        ssh_authorized_key { $sshkey_user:
             user => $user,
             ensure => present,
             type => $sshkey_type,
