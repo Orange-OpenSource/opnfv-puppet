@@ -54,7 +54,7 @@ class opensteak::neutron-compute (
   }
 
   class { '::neutron::agents::ml2::ovs':
-    bridge_uplinks    => join($my_bridges,','),
+    bridge_uplinks    => $my_bridges,
     bridge_mappings   => ['physnet-vm:br-vm'],
   }
 }
