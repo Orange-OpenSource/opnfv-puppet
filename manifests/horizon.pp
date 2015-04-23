@@ -15,7 +15,7 @@
 class opensteak::horizon (
     $debug              = "false",
     $stack_domain       = "stack.opensteak.fr",
-    $server_aliases     = "stack.opensteak.fr",
+    $server_aliases     = "*",
     $secret_key         = "password",
   ){
     
