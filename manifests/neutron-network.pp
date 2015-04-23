@@ -61,15 +61,15 @@ class opensteak::neutron-network (
   }
 
   # neutron plugin ml2
-  class { '::neutron::plugins::ml2':
-    type_drivers          => ['vlan','flat'],
-    flat_networks         => ['physnet-ex'],
-    tenant_network_types  => ['vlan','flat'],
-    network_vlan_ranges   => ["physnet-vm:${neutron_vlans}"],
-    mechanism_drivers     => ['openvswitch'],
-    enable_security_group => true,
-    require               => Package['neutron-plugin-openvswitch'],
-  }
+#  class { '::neutron::plugins::ml2':
+#    type_drivers          => ['vlan','flat'],
+#    flat_networks         => ['physnet-ex'],
+#    tenant_network_types  => ['vlan','flat'],
+#    network_vlan_ranges   => ["physnet-vm:${neutron_vlans}"],
+#    mechanism_drivers     => ['openvswitch'],
+#    enable_security_group => true,
+#    require               => Package['neutron-plugin-openvswitch'],
+#  }
 
   # neutron plugin ml2 agent ovs
   class { '::neutron::agents::ml2::ovs': 
