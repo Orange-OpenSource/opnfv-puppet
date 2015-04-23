@@ -27,6 +27,7 @@ class opensteak::neutron-network (
     $neutron_vlans      = "701:899",
     $neutron_password   = "password",
     $neutron_shared     = $neutron_password,
+    $mtu                = "9160",
   ){
   require opensteak::apt
   $my_bridges = $infra_nodes[$hostname]['bridge_uplinks']
@@ -58,6 +59,7 @@ class opensteak::neutron-network (
     core_plugin           => 'ml2',
     service_plugins       => ['router'],
     allow_overlapping_ips => true,
+    network_device_mtu    => $mtu,
   }
 
   # neutron plugin ml2
