@@ -15,6 +15,7 @@
 class opensteak::horizon (
     $debug              = "false",
     $stack_domain       = "stack.opensteak.fr",
+    $server_aliases     = "stack.opensteak.fr",
     $secret_key         = "password",
   ){
     
@@ -26,6 +27,7 @@ class opensteak::horizon (
     
     class { '::horizon':
         servername            => $stack_domain,
+        $server_aliases       => $server_aliases,
         keystone_url          => "http://keystone.${stack_domain}:5000/v2.0",
         cache_server_ip       => '127.0.0.1',
         cache_server_port     => '11211',
