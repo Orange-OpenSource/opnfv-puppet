@@ -24,6 +24,7 @@ class opensteak::neutron-compute (
                                 bridge_uplinks => ["br-ex:em2","br-vm:em5"],
                             }
                           },
+    $mtu                = "9160",
   ){
   require opensteak::apt
 
@@ -51,6 +52,7 @@ class opensteak::neutron-compute (
     core_plugin           => 'ml2',
     service_plugins       => ['router'],
     allow_overlapping_ips => true,
+    network_device_mtu    => $mtu,
   }
 
   class { '::neutron::agents::ml2::ovs':
