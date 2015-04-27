@@ -28,6 +28,7 @@ class opensteak::neutron-network (
     $neutron_password   = "password",
     $neutron_shared     = $neutron_password,
     $mtu                = "9160",
+    $firewall_driver    = "neutron.agent.firewall.NoopFirewallDriver",
   ){
   require opensteak::apt
   $my_bridges = $infra_nodes[$hostname]['bridge_uplinks']
@@ -77,6 +78,7 @@ class opensteak::neutron-network (
   class { '::neutron::agents::ml2::ovs': 
     bridge_uplinks    => $my_bridges,
     bridge_mappings   => ['physnet-ex:br-ex', 'physnet-vm:br-vm'],
+    firewall_driver   => $firewall_driver,
   }
 
   class { '::neutron::agents::l3': 
@@ -105,6 +107,8 @@ class opensteak::neutron-network (
     ]:
     ensure  => present,
   }
+  
+  neutron_plugin_ml2 { 'agent/veth_mtu': value => $mtu }
   
   # TODO: find a way to add enable_ipset = True in ml2 config
 }
