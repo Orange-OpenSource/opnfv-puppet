@@ -25,6 +25,7 @@ class opensteak::neutron-compute (
                             }
                           },
     $mtu                = "9160",
+    $firewall_driver    = "neutron.agent.firewall.NoopFirewallDriver",
   ){
   require opensteak::apt
 
@@ -58,5 +59,8 @@ class opensteak::neutron-compute (
   class { '::neutron::agents::ml2::ovs':
     bridge_uplinks    => $my_bridges,
     bridge_mappings   => ['physnet-vm:br-vm'],
+    firewall_driver   => $firewall_driver,
   }
+  
+  neutron_plugin_ml2 { 'agent/veth_mtu': value => $mtu },
 }
