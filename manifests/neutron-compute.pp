@@ -62,5 +62,5 @@ class opensteak::neutron-compute (
     firewall_driver   => $firewall_driver,
   }
   
-  neutron_plugin_ml2 { 'agent/veth_mtu': value => $mtu },
+  neutron_plugin_ml2 { 'agent/veth_mtu': value => $mtu }
 }
