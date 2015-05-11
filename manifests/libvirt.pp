@@ -19,7 +19,9 @@ class opensteak::libvirt (
     $sshkey_user = 'foreman@foreman',
     $sshkey_type = 'ssh-rsa',
     $user = 'ubuntu',
-    $ovs_config = $opensteak::base-network::ovs_config,
+    $ovs_config = ["br-adm:em3:dhcp","br-vm:em5:dhcp","br-ex:em2:none"],
+    $cloud_img_url = "http://cloud-images.ubuntu.com/trusty/current/trusty-server-cloudimg-amd64-disk1.img",
+    $pool_folder = '/var/lib/libvirt/images',
 ){
     #~ Install libvirt
     class { '::libvirt':
@@ -33,6 +35,7 @@ class opensteak::libvirt (
         $bridge     = $value[0]
         $interface  = $value[1]
         libvirt::network { $bridge:
+            ensure             => enabled,
             autostart          => true,
             forward_mode       => 'bridge',
             bridge             => $bridge,
@@ -45,8 +48,17 @@ class opensteak::libvirt (
     libvirt_pool { 'default' :
         ensure   => present,
         type     => 'dir',
-        active   => false,
-        target   => '/tmp/pool-dir',
+        active => true,
+        autostart => true,
+        target   => $pool_folder,
+    }
+
+    #~ Get the ubuntu cloud image
+    $cloud_img_name_arr = split($cloud_img_url, '/')
+    $cloud_img_name = $cloud_img_name_arr[-1]
+    exec{'retrieve_cloud_image':
+        command => "/usr/bin/wget -q $cloud_img_url -O ${pool_folder}/${cloud_img_name}",
+        creates => "${pool_folder}/${cloud_img_name}",
     }
 
     #~ Install and configure policykit for a remote usage of libvirt
