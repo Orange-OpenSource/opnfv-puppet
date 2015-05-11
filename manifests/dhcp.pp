@@ -1,11 +1,11 @@
 #
 # Copyright (C) 2014 Orange Labs
-# 
-# This software is distributed under the terms and conditions of the 'Apache-2.0'
-# license which can be found in the file 'LICENSE.txt' in this package distribution 
-# or at 'http://www.apache.org/licenses/LICENSE-2.0'. 
 #
-# Authors: Arnaud Morin <arnaud1.morin@orange.com> 
+# This software is distributed under the terms and conditions of the 'Apache-2.0'
+# license which can be found in the file 'LICENSE.txt' in this package distribution
+# or at 'http://www.apache.org/licenses/LICENSE-2.0'.
+#
+# Authors: Arnaud Morin <arnaud1.morin@orange.com>
 #          David Blaisonneau <david.blaisonneau@orange.com>
 #
 
@@ -41,7 +41,7 @@ class opensteak::dhcp (
         dnsupdatekey => "/etc/bind/rndc.key",
         pxeserver    => $pxeserver,
         pxefilename  => $pxefilename,
-        option_static_route => true, 
+        option_static_route => true,
     }
     $poolslist = keys($pools['pools'])
     define mypool($poolname = $title){
@@ -56,9 +56,9 @@ class opensteak::dhcp (
             mask    => $pooldef['netmask'],
             range   => $pooldef['range'],
             gateway => $pooldef['gateway'],
-            domain_name => "\"${poolname}\"",
+            domain_name => "${poolname}",
             static_routes => $static_routes,
         }
-    }   
+    }
     mypool{$poolslist:}
 }
