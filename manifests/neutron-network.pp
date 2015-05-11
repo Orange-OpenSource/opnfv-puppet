@@ -27,6 +27,8 @@ class opensteak::neutron-network (
     $neutron_vlans      = "701:899",
     $neutron_password   = "password",
     $neutron_shared     = $neutron_password,
+    $mtu                = "9160",
+    $firewall_driver    = "neutron.agent.firewall.NoopFirewallDriver",
   ){
   require opensteak::apt
   $my_bridges = $infra_nodes[$hostname]['bridge_uplinks']
@@ -58,23 +60,25 @@ class opensteak::neutron-network (
     core_plugin           => 'ml2',
     service_plugins       => ['router'],
     allow_overlapping_ips => true,
+    network_device_mtu    => $mtu,
   }
 
   # neutron plugin ml2
-  class { '::neutron::plugins::ml2':
-    type_drivers          => ['vlan','flat'],
-    flat_networks         => ['physnet-ex'],
-    tenant_network_types  => ['vlan','flat'],
-    network_vlan_ranges   => ["physnet-vm:${neutron_vlans}"],
-    mechanism_drivers     => ['openvswitch'],
-    enable_security_group => true,
-    require               => Package['neutron-plugin-openvswitch'],
-  }
+#  class { '::neutron::plugins::ml2':
+#    type_drivers          => ['vlan','flat'],
+#    flat_networks         => ['physnet-ex'],
+#    tenant_network_types  => ['vlan','flat'],
+#    network_vlan_ranges   => ["physnet-vm:${neutron_vlans}"],
+#    mechanism_drivers     => ['openvswitch'],
+#    enable_security_group => true,
+#    require               => Package['neutron-plugin-openvswitch'],
+#  }
 
   # neutron plugin ml2 agent ovs
   class { '::neutron::agents::ml2::ovs': 
-    bridge_uplinks    => join($my_bridges,','),
+    bridge_uplinks    => $my_bridges,
     bridge_mappings   => ['physnet-ex:br-ex', 'physnet-vm:br-vm'],
+    firewall_driver   => $firewall_driver,
   }
 
   class { '::neutron::agents::l3': 
@@ -103,6 +107,8 @@ class opensteak::neutron-network (
     ]:
     ensure  => present,
   }
+  
+  neutron_plugin_ml2 { 'agent/veth_mtu': value => $mtu }
   
   # TODO: find a way to add enable_ipset = True in ml2 config
 }

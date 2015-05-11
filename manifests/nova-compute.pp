@@ -22,6 +22,7 @@ class opensteak::nova-compute (
     $neutron_password   = "password",
     $ceph_enabled       = false,
     $libvirt_rbd_secret = "457eb676-33da-42ec-9a8c-9293d545c337",
+    $mtu                = "9160",
   ){
   require opensteak::apt
 
@@ -48,9 +49,10 @@ class opensteak::nova-compute (
 
   class { '::nova::compute':
     enabled                       => true,
-    vncserver_proxyclient_address => "nova.${stack_domain}",
-    vncproxy_host                 => $stack_domain,
+    vncserver_proxyclient_address => $ipaddress,
+    vncproxy_host                 => "nova.${stack_domain}",
     vnc_keymap                    => 'fr',
+    network_device_mtu            => $mtu,
   }
 
   if $ceph_enabled {

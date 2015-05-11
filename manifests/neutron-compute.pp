@@ -24,6 +24,8 @@ class opensteak::neutron-compute (
                                 bridge_uplinks => ["br-ex:em2","br-vm:em5"],
                             }
                           },
+    $mtu                = "9160",
+    $firewall_driver    = "neutron.agent.firewall.NoopFirewallDriver",
   ){
   require opensteak::apt
 
@@ -51,10 +53,14 @@ class opensteak::neutron-compute (
     core_plugin           => 'ml2',
     service_plugins       => ['router'],
     allow_overlapping_ips => true,
+    network_device_mtu    => $mtu,
   }
 
   class { '::neutron::agents::ml2::ovs':
-    bridge_uplinks    => join($my_bridges,','),
+    bridge_uplinks    => $my_bridges,
     bridge_mappings   => ['physnet-vm:br-vm'],
+    firewall_driver   => $firewall_driver,
   }
+  
+  neutron_plugin_ml2 { 'agent/veth_mtu': value => $mtu }
 }

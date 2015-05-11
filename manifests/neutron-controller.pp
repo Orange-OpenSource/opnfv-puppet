@@ -22,6 +22,7 @@ class opensteak::neutron-controller (
     $neutron_password   = "password",
     $nova_password      = "password",
     $neutron_vlans      = "701:899",
+    $mtu                = "9160",
   ){
   require opensteak::apt
 
@@ -34,6 +35,7 @@ class opensteak::neutron-controller (
     core_plugin           => 'ml2',
     service_plugins       => ['router'],
     allow_overlapping_ips => true,
+    network_device_mtu    => $mtu,
   }
 
   # neutron api server
