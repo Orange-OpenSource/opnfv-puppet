@@ -11,15 +11,15 @@
 #
 
 #
-#  Set the known-hosts file
+#  Set the known-hosts file from a list of hosts (comma separated)
 #
 class opensteak::known-hosts (
-    $known_host_file,
-    $hosts,
+    $known_hosts_file = '/root/.ssh/known_hosts',
+    $hosts = 'server1, server2',
     ){
 
     exec { "create $known_host_file":
-        command => "echo \"$hosts\" | tr ',' \"\\n\"|ssh-keyscan  -H -f - > $known_host_file",
+        command => "echo \"$hosts\" | tr ',' \"\\n\"|ssh-keyscan  -H -f - > $known_hosts_file",
         refreshonly => true,
         path => [ "/bin/", "/sbin/" , "/usr/bin/", "/usr/sbin/" ],
     }
