@@ -47,7 +47,7 @@ class opensteak::dhcp (
     define mypool($poolname = $title){
         $pooldef = $opensteak::dhcp::pools['pools'][$poolname]
         if $pooldef['gateway']{
-                $static_routes = [ { 'mask' => '32', 'network' => '169.254.169.254', 'gateway' => $ip } ]
+                $static_routes = [ { 'mask' => '32', 'network' => '169.254.169.254', 'gateway' => $ipaddress } ]
         }else{
                 $static_routes = undef
         }
