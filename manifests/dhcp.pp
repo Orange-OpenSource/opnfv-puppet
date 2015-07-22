@@ -28,10 +28,10 @@ include stdlib
 
 class opensteak::dhcp (
     $dnsdomain = [$domain],
-    $pools = { "domain": { "network": "192.168.1.0",
-                           "netmask": "255.255.255.0",
-                           "range": "192.168.1.50 192.168.1.99",
-                           "gateway": "192.168.1.1" }}
+    $pools = { "domain"=> { "network"=> "192.168.1.0",
+                            "netmask"=> "255.255.255.0",
+                            "range"=> "192.168.1.50 192.168.1.99",
+                            "gateway"=> "192.168.1.1" }},
     $nameservers = [$ipaddress],
     $interfaces = $interfaces,
     $pxeserver = $ipaddress,
