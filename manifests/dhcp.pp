@@ -33,7 +33,7 @@ class opensteak::dhcp (
                             "range"=> "192.168.1.50 192.168.1.99",
                             "gateway"=> "192.168.1.1" }},
     $nameservers = [$ipaddress],
-    $interfaces = $interfaces,
+    $interfaces = [$interfaces],
     $pxeserver = $ipaddress,
     $pxefilename  = 'pxelinux.0',
 ){
