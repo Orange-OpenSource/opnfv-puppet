@@ -18,12 +18,12 @@ class opensteak::known-hosts (
     $hosts = 'server1, server2',
     ){
 
-    exec { "create $known_host_file":
+    exec { "create $known_hosts_file":
         command => "echo \"$hosts\" | tr ',' \"\\n\"|ssh-keyscan  -H -f - > $known_hosts_file",
         refreshonly => true,
         path => [ "/bin/", "/sbin/" , "/usr/bin/", "/usr/sbin/" ],
     }
-    file { "$known_host_files":
+    file { "$known_hosts_file":
         mode => 0600,
     }
 }
