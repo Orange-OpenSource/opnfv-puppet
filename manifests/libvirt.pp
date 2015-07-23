@@ -60,6 +60,10 @@ class opensteak::libvirt (
         command => "/usr/bin/wget -q $cloud_img_url -O ${pool_folder}/${cloud_img_name}",
         creates => "${pool_folder}/${cloud_img_name}",
     }
+    ->
+    exec{
+        command => "/usr/bin/virsh pool-refresh default",
+    }
 
     #~ Install and configure policykit for a remote usage of libvirt
     package{ "policykit-1":
