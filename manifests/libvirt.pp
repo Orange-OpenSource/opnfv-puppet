@@ -61,7 +61,7 @@ class opensteak::libvirt (
         creates => "${pool_folder}/${cloud_img_name}",
     }
     ->
-    exec{
+    exec{'refresh_default_pool':
         command => "/usr/bin/virsh pool-refresh default",
     }
 
