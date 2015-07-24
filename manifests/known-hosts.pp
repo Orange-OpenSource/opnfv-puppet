@@ -12,10 +12,13 @@
 
 #
 #  Set the known-hosts file from a list of hosts (comma separated)
-#
+#    $known_hosts_file = the known_hosts file,
+#    $hosts = comma separated list of servers,
+#    $owner = user,
 class opensteak::known-hosts (
     $known_hosts_file = '/root/.ssh/known_hosts',
     $hosts = 'server1, server2',
+    $owner = 'root',
     ){
 
     exec { "create $known_hosts_file":
@@ -25,5 +28,7 @@ class opensteak::known-hosts (
     }
     file { "$known_hosts_file":
         mode => 0600,
+        owner => $owner,
+        group => $owner,
     }
 }
