@@ -13,6 +13,7 @@
 #  The profile to install the needed repo
 #
 class opensteak::apt {
+  include apt
 
   apt::source { 'ubuntu_cloud_openstack_juno':
     location   => 'http://ubuntu-cloud.archive.canonical.com/ubuntu',
