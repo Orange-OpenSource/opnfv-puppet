@@ -19,7 +19,6 @@ class opensteak::apt {
     location   => 'http://ubuntu-cloud.archive.canonical.com/ubuntu',
     release    => 'trusty-updates/juno',
     repos      => 'main',
-    #key        => '0x5EDB1B62EC4926EA',
     key        => '391A9AA2147192839E9DB0315EDB1B62EC4926EA',
     key_server => 'keyserver.ubuntu.com',
   }
