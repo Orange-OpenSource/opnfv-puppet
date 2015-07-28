@@ -21,17 +21,17 @@
   ## Logging
   ErrorLog "/var/log/apache2/foreman_error.log"
   ServerSignature Off
-  CustomLog "/var/log/apache2/foreman_access.log" combined 
+  CustomLog "/var/log/apache2/foreman_access.log" combined
 
   ## Server aliases
   ServerAlias foreman
 
   ## Added by opensteak install script for metadata server
   <Location /2009-04-04 >
-    ProxyPass http://127.0.0.1:8888/2009-04-04
+    ProxyPass http://127.0.0.1:<%= metadata_port %>/2009-04-04
   </Location>
   <Location /latest >
-    ProxyPass http://127.0.0.1:8888/latest
+    ProxyPass http://127.0.0.1:<%= metadata_port %>/latest
   </Location>
 
   ## Custom fragment

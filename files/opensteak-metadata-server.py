@@ -21,11 +21,13 @@ import tornado.web
 import socket
 import sys
 import argparse
+import ConfigParser
 from foreman import Foreman
 
-DEFAULT_USERNAME = '<%= foreman_admin %>'
-DEFAULT_PASSWORD = '<%= foreman_password %>'
-DEFAULT_IP = '<%= foreman_ip %>'
+
+confRoot = '/opt/metadata'
+confFile = '{}/metadata.conf'.format(confRoot)
+
 
 class UserDataHandler(tornado.web.RequestHandler):
     """
@@ -48,7 +50,7 @@ class UserDataHandler(tornado.web.RequestHandler):
         domain = foreman.domains[host['domain_id']]
         ret = host.getUserData(hostgroup=hg,
                                domain=domain['name'],
-                               tplFolder='/opt/metadata/templates/')
+                               tplFolder='{}/templates/'.format(confRoot))
         p.status(bool(ret), "VM {0}: sent user data".format(hostname))
         self.write(ret)
 
@@ -82,72 +84,13 @@ class MetaDataHandler(tornado.web.RequestHandler):
                             .format(hostname, meta, ret))
         self.write(ret)
 
-class OpenSteakPrinter:
+
+class StatusPrinter:
     """ Just a nice message printer """
-    HEADER = '\033[95m'
-    OKBLUE = '\033[94m'
     OKGREEN = '\033[92m'
-    WARNING = '\033[93m'
     FAIL = '\033[91m'
-    ENDC = '\033[0m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
 
     TABSIZE = 4
-
-    def header(self, msg):
-        """ Function header
-        Print a header for a block
-
-        @param msg: The message to print in the header (limited to 78 chars)
-        @return RETURN: None
-        """
-        print("""
-#
-# {}
-#
-""".format(msg[0:78]))
-
-    def config(self, msg, name, value=None, indent=0):
-        """ Function config
-        Print a line with the value of a parameter
-
-        @param msg: The message to print in the header (limited to 78 chars)
-        @param name: The name of the prameter
-        @param value: The value of the parameter
-        @param indent: Tab size at the beginning of the line
-        @return RETURN: None
-        """
-        ind = ' ' * indent * self.TABSIZE
-        if value is None:
-            print('{} - {} = {}'.format(ind, msg, name))
-        elif value is False:
-            print('{} [{}KO{}] {} > {} (NOT found)'.
-                  format(ind, self.FAIL, self.ENDC, msg, name))
-        else:
-            print('{} [{}OK{}] {} > {} = {}'.
-                  format(ind, self.OKGREEN, self.ENDC, msg, name, str(value)))
-
-    def list(self, msg, indent=0):
-        """ Function list
-        Print a list item
-
-        @param msg: The message to print in the header (limited to 78 chars)
-        @param indent: Tab size at the beginning of the line
-        @return RETURN: None
-        """
-        print(' ' * indent * self.TABSIZE, '-', msg)
-
-    def list_id(self, dic, indent=0):
-        """ Function list_id
-        Print a list of dict items
-
-        @param dic: The dict to print
-        @param indent: Tab size at the beginning of the line
-        @return RETURN: None
-        """
-        for (k, v) in dic.items():
-            self.list("{}: {}".format(k, v), indent=indent)
 
     def status(self, res, msg, failed="", eol="\n", quit=True, indent=0):
         """ Function status
@@ -157,6 +100,7 @@ class OpenSteakPrinter:
 
         @param res: The status to show
         @param msg: The message to show
+        @param failed: The error message if failed
         @param eol: End of line
         @param quit: Exit the system in case of failure
         @param indent: Tab size at the beginning of the line
@@ -165,9 +109,6 @@ class OpenSteakPrinter:
         ind = ' ' * indent * self.TABSIZE
         if res is True:
             msg = '{} [{}OK{}] {}'.format(ind, self.OKGREEN, self.ENDC, msg)
-        elif res:
-            msg = '{} [{}{}{}] {}'.format(ind, self.OKBLUE, res,
-                                          self.ENDC, msg)
         else:
             msg = '{} [{}KO{}] {}'.format(ind, self.FAIL, self.ENDC, msg)
             if failed:
@@ -176,32 +117,6 @@ class OpenSteakPrinter:
         sys.stdout.write(msg)
         if res is False and quit is True:
             sys.exit(0)
-
-    def ask_validation(self, prompt=None, resp=False):
-        """ Function ask_validation
-        Ask a validation message
-
-        @param prompt: The question to ask ('Continue ?') if None
-        @param resp: The default value (Default is False)
-        @return RETURN: Trie or False
-        """
-        if prompt is None:
-            prompt = 'Continue ?'
-        if resp:
-            prompt += ' [{}Y{}/n]: '.format(self.BOLD, self.ENDC)
-        else:
-            prompt += ' [y/{}N{}]: '.format(self.BOLD, self.ENDC)
-        while True:
-            ans = input(prompt)
-            if not ans:
-                ans = 'y' if resp else 'n'
-            if ans not in ['y', 'Y', 'n', 'N']:
-                print('please enter y or n.')
-                continue
-            if ans == 'y' or ans == 'Y':
-                return True
-            if ans == 'n' or ans == 'N':
-                sys.exit(0)
 
 
 def getIP(request):
@@ -221,39 +136,38 @@ application = tornado.web.Application([
 ])
 
 if __name__ == "__main__":
-    p = OpenSteakPrinter()
+    p = StatusPrinter()
 
-    #
-    # Check for params
-    #
-    p.header("Check parameters")
-    args = {}
+    # Read the config file
+    Config = ConfigParser.ConfigParser()
+    Config.read(confFile)
+    serverOptions = Config.options('server')
+    foremanOptions = Config.options('foreman-api')
 
     # Update args with values from CLI
+    args = {}
     parser = argparse.ArgumentParser(description='This script will run a '
                                                  'metadata server connected '
                                                  'to a foreman server.',
                                      usage='%(prog)s [options]')
     parser.add_argument('-a', '--admin',
                         help='Username to connect to foreman (default is '
-                              '{0}).'.format(DEFAULT_USERNAME),
-                        default=DEFAULT_USERNAME)
+                              '{0}).'.format(foremanOptions['username']),
+                        default=foremanOptions['username'])
     parser.add_argument('-p', '--password',
                         help='Password to connect to foreman (default is '
-                              '{0}).'.format(DEFAULT_PASSWORD),
-                        default=DEFAULT_PASSWORD)
+                              '{0}).'.format(foremanOptions['password']),
+                        default=foremanOptions['password'])
     parser.add_argument('-i', '--ip',
                         help='IP address of foreman (default is '
-                              '{0}).'.format(DEFAULT_IP),
-                        default=DEFAULT_IP)
+                              '{0}).'.format(foremanOptions['ip']),
+                        default=foremanOptions['ip'])
     args.update(vars(parser.parse_args()))
 
-    # p.list_id(args)
+    foreman = Foreman(login=args["admin"],
+                      password=args["password"],
+                      ip=args["ip"])
 
-    foreman = Foreman(  login=args["admin"],
-                        password=args["password"],
-                        ip=args["ip"])
-
-    p.header("Run server")
-    application.listen(8888)
+    print("Run server on port {}".format(serverOptions['port']))
+    application.listen(serverOptions['port'])
     tornado.ioloop.IOLoop.instance().start()
