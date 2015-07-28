@@ -46,10 +46,10 @@ class opensteak::metadata (
     }
     ->
     # Create metadata template folder
-    file { "/opt/metadata":
+    file { "/opt/metadata/templates":
         ensure  => "directory",
         recurse => true,
-        source  => "puppet:///modules/opensteak/metadata/",
+        source  => "puppet:///modules/opensteak/metadata/templates/",
     }
     ->
     # Create conf
