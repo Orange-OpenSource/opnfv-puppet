@@ -31,7 +31,7 @@ class opensteak::metadata (
     ->
     pip::install { ['beautifulsoup4', 'PyYAML', 'requests', 'requests-futures']:
         ensure          => present,
-        python_version  => '3.4',
+        python_version  => '3',
     }
     ->
     # Create binary
@@ -43,7 +43,12 @@ class opensteak::metadata (
     # Create metadata folder
     file { "/opt/metadata":
         ensure  => "directory",
-        recurse => True,
+    }
+    ->
+    # Create metadata template folder
+    file { "/opt/metadata":
+        ensure  => "directory",
+        recurse => true,
         source  => "puppet:///modules/opensteak/metadata/",
     }
     ->
@@ -75,6 +80,18 @@ class opensteak::metadata (
         content => template("opensteak/05-foreman.conf.erb"),
     }
 
-    #a2enmod proxy_http
-    apache::mod { 'proxy_http': }
+    # Enable apache modes (we do not user apache2::enmods to avoid
+    # issues with foreman-installer config
+    file { '/etc/apache2/mods-enabled/proxy.conf':
+        ensure => 'link',
+        target => '/etc/apache2/mods-available/proxy.conf',
+    }
+    file { '/etc/apache2/mods-enabled/proxy_http.load':
+        ensure => 'link',
+        target => '/etc/apache2/mods-available/proxy_http.load',
+    }
+    file { '/etc/apache2/mods-enabled/proxy.load':
+        ensure => 'link',
+        target => '/etc/apache2/mods-available/proxy.load',
+    }
 }
