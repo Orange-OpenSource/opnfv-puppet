@@ -21,7 +21,7 @@ import tornado.web
 import socket
 import sys
 import argparse
-import ConfigParser
+import configparser
 from foreman import Foreman
 
 
@@ -139,10 +139,10 @@ if __name__ == "__main__":
     p = StatusPrinter()
 
     # Read the config file
-    Config = ConfigParser.ConfigParser()
-    Config.read(confFile)
-    serverOptions = Config.options('server')
-    foremanOptions = Config.options('foreman-api')
+    config = configparser.ConfigParser()
+    config.read(confFile)
+    serverOptions = config.options('server')
+    foremanOptions = config.options('foreman-api')
 
     # Update args with values from CLI
     args = {}
