@@ -49,8 +49,8 @@ class opensteak::metadata (
     ->
     # Create conf
     file { "/opt/metadata/opensteak-metadata.conf":
-        content => template("opensteak/opensteak-metadata.conf.py"),
-        mode    => "0755",
+        content => template("opensteak/opensteak-metadata.conf.erb"),
+        mode    => "0555",
     }
     ->
     # Create init
