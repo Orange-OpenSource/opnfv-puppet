@@ -51,7 +51,7 @@ class UserDataHandler(tornado.web.RequestHandler):
         ret = host.getUserData(hostgroup=hg,
                                domain=domain,
                                tplFolder='{}/templates/'.format(confRoot))
-        p.status(bool(ret), "VM {0}: sent user data".format(hostname))
+        log(bool(ret), hostname, "VM {0}: sent user data".format(hostname))
         self.write(ret)
 
 
@@ -80,44 +80,27 @@ class MetaDataHandler(tornado.web.RequestHandler):
         else:
             raise tornado.web.HTTPError(status_code=404,
                                         log_message='No such metadata')
-        p.status(bool(ret), "VM {0}: sent meta data '{1}' with value '{2}'"
-                            .format(hostname, meta, ret))
+        log(bool(ret), hostname,
+            "VM {0}: sent meta data '{1}' with value '{2}'"
+            .format(hostname, meta, ret))
         self.write(ret)
 
 
-class StatusPrinter:
-    """ Just a nice message printer """
-    OKGREEN = '\033[92m'
-    FAIL = '\033[91m'
-    ENDC = '\033[0m'
-
-    TABSIZE = 4
-
-    def status(self, res, msg, failed="", eol="\n", quit=True, indent=0):
-        """ Function status
+def log(res, source, msg):
+        """ Function log
         Print status message
         - OK/KO if the result is a boolean
-        - Else the result text
 
         @param res: The status to show
+        @param source: The client hostname
         @param msg: The message to show
-        @param failed: The error message if failed
-        @param eol: End of line
-        @param quit: Exit the system in case of failure
-        @param indent: Tab size at the beginning of the line
         @return RETURN: None
         """
-        ind = ' ' * indent * self.TABSIZE
         if res is True:
-            msg = '{} [{}OK{}] {}'.format(ind, self.OKGREEN, self.ENDC, msg)
+            msg = '[OK] {}'.format(msg)
         else:
-            msg = '{} [{}KO{}] {}'.format(ind, self.FAIL, self.ENDC, msg)
-            if failed:
-                msg += '\n > {}'.format(failed)
-        msg = msg.ljust(140) + eol
-        sys.stdout.write(msg)
-        if res is False and quit is True:
-            sys.exit(0)
+            msg = '[KO] {}'.format(msg)
+        print(msg)
 
 
 def getIP(request):
@@ -137,8 +120,6 @@ application = tornado.web.Application([
 ])
 
 if __name__ == "__main__":
-    p = StatusPrinter()
-
     # Read the config file
     config = configparser.ConfigParser()
     config.read(confFile)
