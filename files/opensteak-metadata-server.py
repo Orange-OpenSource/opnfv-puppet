@@ -151,15 +151,15 @@ if __name__ == "__main__":
     parser.add_argument('-a', '--admin',
                         help='Username to connect to foreman (default is '
                               '{0}).'.format(config['foreman']['username']),
-                        default=foremanOptions['username'])
+                        default=config['foreman']['username'])
     parser.add_argument('-p', '--password',
                         help='Password to connect to foreman (default is '
                               '{0}).'.format(config['foreman']['password']),
-                        default=foremanOptions['password'])
+                        default=config['foreman']['password'])
     parser.add_argument('-i', '--ip',
                         help='IP address of foreman (default is '
                               '{0}).'.format(config['foreman']['ip']),
-                        default=foremanOptions['ip'])
+                        default=config['foreman']['ip'])
     args.update(vars(parser.parse_args()))
 
     foreman = Foreman(login=args["admin"],
