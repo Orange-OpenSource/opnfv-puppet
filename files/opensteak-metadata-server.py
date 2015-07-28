@@ -141,8 +141,6 @@ if __name__ == "__main__":
     # Read the config file
     config = configparser.ConfigParser()
     config.read(confFile)
-    serverOptions = config.options('server')
-    foremanOptions = config.options('foreman-api')
 
     # Update args with values from CLI
     args = {}
@@ -152,15 +150,15 @@ if __name__ == "__main__":
                                      usage='%(prog)s [options]')
     parser.add_argument('-a', '--admin',
                         help='Username to connect to foreman (default is '
-                              '{0}).'.format(foremanOptions['username']),
+                              '{0}).'.format(config['foreman']['username']),
                         default=foremanOptions['username'])
     parser.add_argument('-p', '--password',
                         help='Password to connect to foreman (default is '
-                              '{0}).'.format(foremanOptions['password']),
+                              '{0}).'.format(config['foreman']['password']),
                         default=foremanOptions['password'])
     parser.add_argument('-i', '--ip',
                         help='IP address of foreman (default is '
-                              '{0}).'.format(foremanOptions['ip']),
+                              '{0}).'.format(config['foreman']['ip']),
                         default=foremanOptions['ip'])
     args.update(vars(parser.parse_args()))
 
@@ -168,6 +166,6 @@ if __name__ == "__main__":
                       password=args["password"],
                       ip=args["ip"])
 
-    print("Run server on port {}".format(serverOptions['port']))
-    application.listen(serverOptions['port'])
+    print("Run server on port {}".format(config['server']['port']))
+    application.listen(config['server']['port'])
     tornado.ioloop.IOLoop.instance().start()
