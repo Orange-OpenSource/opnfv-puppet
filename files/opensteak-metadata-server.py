@@ -49,7 +49,7 @@ class UserDataHandler(tornado.web.RequestHandler):
         # get the domain
         domain = foreman.domains[host['domain_id']]
         ret = host.getUserData(hostgroup=hg,
-                               domain=domain['name'],
+                               domain=domain,
                                tplFolder='{}/templates/'.format(confRoot))
         p.status(bool(ret), "VM {0}: sent user data".format(hostname))
         self.write(ret)
@@ -89,6 +89,7 @@ class StatusPrinter:
     """ Just a nice message printer """
     OKGREEN = '\033[92m'
     FAIL = '\033[91m'
+    ENDC = '\033[0m'
 
     TABSIZE = 4
 
