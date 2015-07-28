@@ -29,7 +29,7 @@ class opensteak::metadata (
         ensure => installed,
     }
     ->
-    pip::install { ['beautifulsoup4', 'PyYAML', 'requests', 'requests-futures']:
+    pip::install { ['foreman']:
         ensure          => present,
         python_version  => '3',
     }
