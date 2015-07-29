@@ -70,14 +70,21 @@ class opensteak::metadata (
         require => Package['python3-tornado'],
     }
 
+    # Manage apache service
+    service { "apache2":
+        ensure  => running,
+    }
+
     # Set metadata_ip to the network interface
     exec { "/sbin/ip a a $metadata_ip dev $metadata_interface":
         unless => "/sbin/ip a l $metadata_interface | /bin/grep $metadata_ip",
+        notify => Service['apache2'],
     }
 
     # Set configuration in foreman apache conf
     file { "/etc/apache2/sites-enabled/05-foreman.conf":
         content => template("opensteak/05-foreman.conf.erb"),
+        notify => Service['apache2'],
     }
 
     # Enable apache modes (we do not user apache2::enmods to avoid
@@ -85,13 +92,16 @@ class opensteak::metadata (
     file { '/etc/apache2/mods-enabled/proxy.conf':
         ensure => 'link',
         target => '/etc/apache2/mods-available/proxy.conf',
+        notify => Service['apache2'],
     }
     file { '/etc/apache2/mods-enabled/proxy_http.load':
         ensure => 'link',
         target => '/etc/apache2/mods-available/proxy_http.load',
+        notify => Service['apache2'],
     }
     file { '/etc/apache2/mods-enabled/proxy.load':
         ensure => 'link',
         target => '/etc/apache2/mods-available/proxy.load',
+        notify => Service['apache2'],
     }
 }
