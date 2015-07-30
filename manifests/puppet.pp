@@ -15,9 +15,12 @@
 class opensteak::puppet (
     $foreman_fqdn = "foreman.infra.opensteak.fr"
 ){
-
+    
+    package{ 'puppet':
+        ensure => installed,
+    }
+    ->
     file { '/etc/puppet/auth.conf':
-        require => Package['puppet'],
         content => template("opensteak/puppet_auth.conf.erb"),
     }
 }
