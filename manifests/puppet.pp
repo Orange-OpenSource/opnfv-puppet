@@ -23,4 +23,7 @@ class opensteak::puppet (
     file { '/etc/puppet/auth.conf':
         content => template("opensteak/puppet_auth.conf.erb"),
     }
+    service { 'puppet':
+        ensure => running,
+    }
 }
