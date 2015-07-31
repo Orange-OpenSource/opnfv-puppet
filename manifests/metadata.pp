@@ -67,7 +67,6 @@ class opensteak::metadata (
     # Start Service
     service { "metadata":
         ensure  => running,
-        require => Package['python3-tornado'],
     }
 
     # Manage apache service
