@@ -10,20 +10,20 @@
 #
 
 #
-#  Puppet.conf file used in the VM
+#  The profile to install the needed repo
 #
-[main]
-vardir = /var/lib/puppet
-logdir = /var/log/puppet
-rundir = /var/run/puppet
-ssldir = $vardir/ssl
-
-[agent]
-pluginsync      = true
-report          = true
-ignoreschedules = true
-listen          = true
-daemon          = false
-ca_server       = %foremanHostname
-environment     = production
-server          = %foremanHostname
+class opensteak::puppet (
+    $foreman_fqdn = "foreman.infra.opensteak.fr"
+){
+    
+    package{ 'puppet':
+        ensure => installed,
+    }
+    ->
+    file { '/etc/puppet/auth.conf':
+        content => template("opensteak/puppet_auth.conf.erb"),
+    }
+    service { 'puppet':
+        ensure => running,
+    }
+}

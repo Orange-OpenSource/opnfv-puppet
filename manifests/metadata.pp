@@ -22,7 +22,7 @@ class opensteak::metadata (
     $metadata_interface = 'eth0',
     $metadata_port = 8888,
     ){
-    include pip
+    include ::pip
 
     # Install prerequisities
     package { 'python3-tornado':
@@ -31,7 +31,7 @@ class opensteak::metadata (
     ->
     pip::install { ['foreman']:
         ensure          => present,
-        python_version  => '3',
+        python_version  => '3.4',
     }
     ->
     # Create binary
