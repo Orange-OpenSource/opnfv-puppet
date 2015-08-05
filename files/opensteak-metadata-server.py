@@ -111,7 +111,17 @@ def getIP(request):
 
 
 def getNameFromSourceIP(ip):
-    return socket.gethostbyaddr(ip)[0]
+    # Old way to find the IP was to perform a reverse DNS lookup
+    # this is working when the machine do DHCP request with its real 
+    # hostname.
+    # Unfortunately, most of the time, ubuntu cloud machines use the
+    # default 'ubuntu' hostname...
+    #return socket.gethostbyaddr(ip)[0]
+
+    # New way is to try to find source IP in foreman.hosts hash
+    for name, values in foreman.hosts.items():
+        if values['ip'] == ip:
+            return name
 
 
 application = tornado.web.Application([
