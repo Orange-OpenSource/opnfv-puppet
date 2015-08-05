@@ -23,7 +23,6 @@ class opensteak::known-hosts (
 
     exec { "create $known_hosts_file":
         command => "echo \"$hosts\" | tr ',' \"\\n\"|ssh-keyscan  -H -f - > $known_hosts_file",
-        refreshonly => true,
         path => [ "/bin/", "/sbin/" , "/usr/bin/", "/usr/sbin/" ],
     }
     file { "$known_hosts_file":
