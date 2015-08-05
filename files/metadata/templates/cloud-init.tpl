@@ -25,7 +25,7 @@ runcmd:
  - [ sh, -c, "apt-get -y install puppet"]
  - [ sh, -c, "mv /etc/puppet/puppet.conf /etc/puppet/puppet.conf.old"]
  - [ sh, -c, "mv /tmp/puppet.conf /etc/puppet/puppet.conf"]
- - [ sh, -c, "service puppet restart"]
+# - [ sh, -c, "service puppet restart"]
  - [ sh, -c, "puppet agent --enable"]
  - [ sh, -c, "puppet agent -t -v"]
  - [ sh, -c, "/usr/bin/wget --quiet --output-document=/dev/null --no-check-certificate %foremanurlbuilt"]

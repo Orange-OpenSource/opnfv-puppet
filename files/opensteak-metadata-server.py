@@ -40,20 +40,27 @@ class UserDataHandler(tornado.web.RequestHandler):
         @return RETURN: user-data script
         """
         hostname = getNameFromSourceIP(getIP(self.request))
-        host = foreman.hosts[hostname]
-        # Get the hostgroup
-        if host['hostgroup_id']:
-            hg = foreman.hostgroups[host['hostgroup_id']]
+        # If the machine is declared in foreman, handle the userdata
+        if hostname is not None:
+            host = foreman.hosts[hostname]
+            # Get the hostgroup
+            if host['hostgroup_id']:
+                hg = foreman.hostgroups[host['hostgroup_id']]
+            else:
+                hg = None
+            # get the domain
+            domain = foreman.domains[host['domain_id']]
+            ret = host.getUserData(hostgroup=hg,
+                                   domain=domain,
+                                   tplFolder='{}/templates/'
+                                   .format(confRoot))
+            log(bool(ret), "VM {0}: sent user data".format(hostname))
+            self.write(ret)
         else:
-            hg = None
-        # get the domain
-        domain = foreman.domains[host['domain_id']]
-        ret = host.getUserData(hostgroup=hg,
-                               domain=domain,
-                               tplFolder='{}/templates/'.format(confRoot))
-        log(bool(ret), hostname, "VM {0}: sent user data".format(hostname))
-        self.write(ret)
-
+            log(False, "No VM with IP '{0}' found in foreman. Trying a reload..."
+                .format(getIP(self.request)))
+            # Reload foreman.hosts
+            foreman.hosts.reload()
 
 class MetaDataHandler(tornado.web.RequestHandler):
     """
@@ -66,33 +73,39 @@ class MetaDataHandler(tornado.web.RequestHandler):
         @return RETURN: meta data parameters
         """
         hostname = getNameFromSourceIP(getIP(self.request))
-        host = foreman.hosts[hostname]
-        available_meta = {
-            'name': host['name'],
-            'instance-id': host['name'],
-            'hostname': host['name'],
-            'local-hostname': host['name'],
-            }
-        if meta in available_meta.keys():
-            ret = available_meta[meta]
-        elif meta == '':
-            ret = "\n".join(available_meta)
+        # If the machine is declared in foreman, handle the userdata
+        if hostname is not None:
+            host = foreman.hosts[hostname]
+            
+            available_meta = {
+                'name': host['name'],
+                'instance-id': host['name'],
+                'hostname': host['name'],
+                'local-hostname': host['name'],
+                }
+            if meta in available_meta.keys():
+                ret = available_meta[meta]
+            elif meta == '':
+                ret = "\n".join(available_meta)
+            else:
+                raise tornado.web.HTTPError(status_code=404,
+                                            log_message='No such metadata')
+            log(bool(ret),
+                "VM {0}: sent meta data '{1}' with value '{2}'"
+                .format(hostname, meta, ret))
+            self.write(ret)
         else:
-            raise tornado.web.HTTPError(status_code=404,
-                                        log_message='No such metadata')
-        log(bool(ret), hostname,
-            "VM {0}: sent meta data '{1}' with value '{2}'"
-            .format(hostname, meta, ret))
-        self.write(ret)
+            log(False, "No VM with IP '{0}' found in foreman. Trying a reload..."
+                .format(getIP(self.request)))
+            # Reload foreman.hosts
+            foreman.hosts.reload()
 
-
-def log(res, source, msg):
+def log(res, msg):
         """ Function log
         Print status message
         - OK/KO if the result is a boolean
 
         @param res: The status to show
-        @param source: The client hostname
         @param msg: The message to show
         @return RETURN: None
         """
@@ -122,6 +135,10 @@ def getNameFromSourceIP(ip):
     for name, values in foreman.hosts.items():
         if values['ip'] == ip:
             return name
+
+    # Being here suppose that we did not find any host in foreman
+    # with this IP
+    return None
 
 
 application = tornado.web.Application([
